@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+      http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
+
+
+	<changeSet id="1" author="postgres">
+		<createTable tableName="region">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true"
+					primaryKeyName="region_pk" />
+			</column>
+			<column name="name" type="varchar">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="region"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="2" author="postgres">
+		<createTable tableName="city">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" primaryKeyName="city_pk"/>
+			</column>
+			<column name="region_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+			<column name="name" type="varchar">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="city_region_fk" referencedTableName="region"
+								 baseColumnNames="region_id" baseTableName="city" referencedColumnNames="id"
+								 onDelete="CASCADE" onUpdate="CASCADE"/>
+		<rollback>
+			<dropTable tableName="city"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="3" author="postgres">
+		<createTable tableName="street">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" primaryKeyName="street_pk"/>
+			</column>
+			<column name="city_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+			<column name="name" type="varchar">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="street_city_fk" referencedTableName="city"
+								 baseColumnNames="city_id" baseTableName="street" referencedColumnNames="id"
+								 onDelete="CASCADE" onUpdate="CASCADE"/>
+		<rollback>
+			<dropTable tableName="street"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="4" author="postgres">
+		<loadData tableName="region"
+					file="classpath:/db/address_database/region.csv"
+					separator=";"
+					encoding="windows-1251">
+			<column header="id" name="id"/>
+			<column header="name" name="name"/>
+		</loadData>
+	</changeSet>
+	
+	<changeSet id="5" author="postgres">
+		<loadData tableName="city"
+					file="classpath:/db/address_database/city.csv"
+					separator=";"
+					encoding="windows-1251">
+			<column header="id" name="id"/>
+			<column header="region_id" name="region_id"/>
+			<column header="name" name="name"/>
+		</loadData>
+	</changeSet>
+	
+	<changeSet id="6" author="postgres">
+		<loadData tableName="street"
+					file="classpath:/db/address_database/street.csv"
+					separator=";"
+					encoding="windows-1251">
+			<column header="id" name="id"/>
+			<column header="city_id" name="city_id"/>
+			<column header="name" name="name"/>
+		</loadData>
+	</changeSet>
+
+</databaseChangeLog>

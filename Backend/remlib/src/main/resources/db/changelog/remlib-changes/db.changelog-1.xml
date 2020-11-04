@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+      http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
+
+	<changeSet id="1" author="postgres">
+		<createTable tableName="publication">
+			<column name="id" type="int">
+				<constraints nullable="false" 
+				primaryKey="true" 
+				primaryKeyName="publication_pk"/>
+			</column>
+			<column name="title" type="varchar">
+				<constraints nullable="false" />
+			</column>
+			<column name="identifier" type="varchar">
+				<constraints nullable="false" />
+			</column>
+			<column name="edition" type="varchar" />
+			<column name="creator" type="varchar">
+				<constraints nullable="false" />
+			</column>
+			<column name="publisher" type="varchar" />
+			<column name="subject" type="varchar" />
+			<column name="descr_text" type="clob" />
+			<column name="descr_photo" type="blob" />
+			<column name="source" type="varchar" />
+			<column name="publication_date" type="date" />
+			<column name="contributor" type="varchar" />
+			<column name="rights" type="varchar" />
+			<column name="format" type="varchar" />
+			<column name="language" type="varchar">
+				<constraints nullable="false"/>
+			</column>
+			<column name="type" type="varchar" />
+		</createTable>
+		
+		<rollback>
+			<dropTable tableName="publication"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="2" author="postgres">
+		<createTable tableName="user">
+			<column name="email" type="varchar">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="user_pk" unique="true"/>
+			</column>
+			<column name="student_card" type="varchar"/>
+			<column name="surname" type="varchar">
+				<constraints nullable="false"/>
+			</column>
+			<column name="name" type="varchar">
+				<constraints nullable="false"/>
+			</column>
+			<column name="patronymic" type="varchar"/>
+			<column name="birthday" type="date">
+				<constraints nullable="false"/>
+			</column>
+			<column name="phone" type="bigint"/>
+			<column name="password" type="varchar">
+				<constraints nullable="false"/>
+			</column>
+			<column name="fee" type="int" defaultValue="0"/>
+		</createTable>
+		
+		<rollback>
+			<dropTable tableName="user"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="3" author="postgres">
+		<createTable tableName="catalog_entry">
+			<column name="id" type="int">
+				<constraints primaryKey="true" primaryKeyName="catalog_entry_pk"/>
+			</column>
+			
+			<column name="item_number" type="varchar">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			
+		</createTable>
+		<rollback>
+			<dropTable tableName="catalog_entry"/>
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>
