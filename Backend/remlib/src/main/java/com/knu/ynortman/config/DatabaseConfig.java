@@ -16,19 +16,12 @@ public class DatabaseConfig {
 
     @Bean
     @Primary
-    @ConfigurationProperties(prefix = "spring.datasource.primary")
+    @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource primaryDataSource() {
         return DataSourceBuilder.create().build();
     }
-	
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.secondary")
-    public DataSource secondaryDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-	
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.primary.liquibase")
+    @ConfigurationProperties(prefix = "spring.datasource.liquibase")
     public LiquibaseProperties primaryLiquibaseProperties() {
         return new LiquibaseProperties();
     }
@@ -38,16 +31,6 @@ public class DatabaseConfig {
         return springLiquibase(primaryDataSource(), primaryLiquibaseProperties());
     }
 	
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.secondary.liquibase")
-    public LiquibaseProperties secondaryLiquibaseProperties() {
-        return new LiquibaseProperties();
-    }
-	
-    @Bean
-    public SpringLiquibase secondaryLiquibase() {
-        return springLiquibase(secondaryDataSource(), secondaryLiquibaseProperties());
-    }
 	
     private static SpringLiquibase springLiquibase(DataSource dataSource, LiquibaseProperties properties) {
         SpringLiquibase liquibase = new SpringLiquibase();

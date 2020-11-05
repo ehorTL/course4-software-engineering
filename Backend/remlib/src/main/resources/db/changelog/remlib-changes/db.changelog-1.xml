@@ -45,6 +45,27 @@
 	</changeSet>
 	
 	<changeSet id="2" author="postgres">
+		<createTable tableName="address">
+			<column name="id" type="int">
+				<constraints primaryKey="true" primaryKeyName="address_id"/>
+			</column>
+			<column name="country_code" type="varchar" defaultValue="UA"/>
+			<column name="street_id" type="bigint" />
+			<column name="building" type="varchar">
+				<constraints nullable="false"/>
+			</column>
+			<column name="flat" type="int"/>
+		</createTable>
+		<addForeignKeyConstraint constraintName="street_address_fk" 
+			referencedTableName="street" baseColumnNames="street_id" baseTableName="address" referencedColumnNames="id"
+			referencedTableSchemaName="address" onDelete="CASCADE" onUpdate="CASCADE"/>
+		
+		<rollback>
+			<dropTable tableName="address"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="3" author="postgres">
 		<createTable tableName="user">
 			<column name="email" type="varchar">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="user_pk" unique="true"/>
@@ -64,15 +85,63 @@
 			<column name="password" type="varchar">
 				<constraints nullable="false"/>
 			</column>
+			<column name="address_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
 			<column name="fee" type="int" defaultValue="0"/>
 		</createTable>
+		
+		<addForeignKeyConstraint constraintName="user_address_fk" 
+			referencedTableName="address" baseColumnNames="address_id" baseTableName="user" referencedColumnNames="id"
+			onDelete="CASCADE" onUpdate="CASCADE"/>
 		
 		<rollback>
 			<dropTable tableName="user"/>
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="3" author="postgres">
+	<changeSet id="4" author="postgres">
+		<createTable tableName="library">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" primaryKeyName="library_id"/>
+			</column>
+			<column name="name" type="varchar"/>
+			<column name="address_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="library_address_fk" referencedTableName="address" 
+				baseColumnNames="address_id" baseTableName="library" referencedColumnNames="id"
+				onDelete="CASCADE" onUpdate="CASCADE"/>
+		<rollback>
+			<dropTable tableName="library"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="5" author="postgres">
+		<createTable tableName="status">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" primaryKeyName="status_pk"/>
+			</column>
+			<column name="stat" type="varchar">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+		
+		<insert tableName="status">
+			<column name="id" value="0" />
+			<column name="stat" value="available" />
+			<column name="id" value="1" />
+			<column name="stat" value="on hold" />
+			<column name="id" value="2" />
+			<column name="stat" value="non-circulating" />
+		</insert>
+		<rollback>
+			<dropTable tableName="status"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="6" author="postgres">
 		<createTable tableName="catalog_entry">
 			<column name="id" type="int">
 				<constraints primaryKey="true" primaryKeyName="catalog_entry_pk"/>
@@ -81,11 +150,111 @@
 			<column name="item_number" type="varchar">
 				<constraints nullable="false" unique="true"/>
 			</column>
+			<column name="publication_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="library_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="status_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			
+			<column name="avlbl_from" type="date">
+				<constraints nullable="false"/>
+			</column>
+			<column name="copies_number" type="int" defaultValue="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="copies_avlbl" type="int" defaultValue="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="loan_days" type="int">
+				<constraints nullable="false"/>
+			</column>
 			
 		</createTable>
+		
+		<addForeignKeyConstraint constraintName="catalog_entry_library_fk" referencedTableName="library" baseColumnNames="library_id" 
+				baseTableName="catalog_entry" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+				
+		<addForeignKeyConstraint constraintName="catalog_entry_publication_fk" referencedTableName="publication" baseColumnNames="publication_id" 
+				baseTableName="catalog_entry" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+				
+		<addForeignKeyConstraint constraintName="catalog_entry_status_fk" referencedTableName="status" baseColumnNames="status_id" 
+				baseTableName="catalog_entry" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+		
 		<rollback>
 			<dropTable tableName="catalog_entry"/>
 		</rollback>
+	</changeSet>
+	
+	<changeSet id="7" author="postgres">
+		<createTable tableName="loan_status">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" primaryKeyName="loan_status_pk"/>
+			</column>
+			<column name="stat" type="varchar">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+		
+		<insert tableName="status">
+			<column name="id" value="0" />
+			<column name="stat" value="checked out" />
+			<column name="id" value="1" />
+			<column name="stat" value="checked in" />
+			<column name="id" value="2" />
+			<column name="stat" value="requested" />
+			<column name="id" value="3" />
+			<column name="stat" value="queue" />
+		</insert>
+		<rollback>
+			<dropTable tableName="status"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="8" author="postgres">
+		<createTable tableName="loan_card">
+			<column name="id" type="int">
+				<constraints primaryKey="true" primaryKeyName="loan_card_pk"/>
+			</column>
+			<column name="user_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+			<column name="catalog_entry_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+			<column name="loan_status_id" type="bigint">
+				<constraints nullable="false"/>
+			</column>
+			<column name="checked_out_date" type="date" />
+			<column name="loan_until" type="date">
+				<constraints nullable="false"/>
+			</column>
+			<column name="avlbl_from" type="date">
+				<constraints nullable="false"/>
+			</column>
+			<column name="notes" type="clob" />
+		</createTable>
+		
+		<dropColumn tableName="loan_card" columnName="user_id"></dropColumn>
+		<addColumn tableName="loan_card">
+			<column name="user_email" type="varchar" afterColumn="id">
+				<constraints nullable="false"/>
+			</column>
+		</addColumn>
+		
+		<addForeignKeyConstraint constraintName="loan_card_user_fk" referencedTableName="user" baseColumnNames="user_email" 
+				baseTableName="loan_card" referencedColumnNames="email" onDelete="CASCADE" onUpdate="CASCADE"/>
+				
+		<addForeignKeyConstraint constraintName="loan_card_loan_status_fk" referencedTableName="loan_status" baseColumnNames="loan_status_id" 
+				baseTableName="loan_card" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+		
+		<rollback>
+			<dropTable tableName="loan_card"/>
+		</rollback>
+		
 	</changeSet>
 
 </databaseChangeLog>

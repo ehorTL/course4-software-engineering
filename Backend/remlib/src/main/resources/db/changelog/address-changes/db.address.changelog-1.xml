@@ -7,9 +7,14 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
       http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
 
+	<changeSet id="schema" author="postgres">
+		<sql endDelimiter=";">
+			CREATE SCHEMA IF NOT EXISTS address
+		</sql>
+	</changeSet>
 
-	<changeSet id="1" author="postgres">
-		<createTable tableName="region">
+	<changeSet id="region" author="postgres">
+		<createTable tableName="region" schemaName="address">
 			<column name="id" type="bigint">
 				<constraints primaryKey="true"
 					primaryKeyName="region_pk" />
@@ -23,8 +28,8 @@
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="2" author="postgres">
-		<createTable tableName="city">
+	<changeSet id="city" author="postgres">
+		<createTable tableName="city" schemaName="address">
 			<column name="id" type="bigint">
 				<constraints primaryKey="true" primaryKeyName="city_pk"/>
 			</column>
@@ -35,16 +40,16 @@
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
-		<addForeignKeyConstraint constraintName="city_region_fk" referencedTableName="region"
-								 baseColumnNames="region_id" baseTableName="city" referencedColumnNames="id"
+		<addForeignKeyConstraint constraintName="city_region_fk" referencedTableName="region" referencedTableSchemaName="address"
+								 baseColumnNames="region_id" baseTableName="city" referencedColumnNames="id" baseTableSchemaName="address"
 								 onDelete="CASCADE" onUpdate="CASCADE"/>
 		<rollback>
 			<dropTable tableName="city"/>
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="3" author="postgres">
-		<createTable tableName="street">
+	<changeSet id="street" author="postgres">
+		<createTable tableName="street" schemaName="address">
 			<column name="id" type="bigint">
 				<constraints primaryKey="true" primaryKeyName="street_pk"/>
 			</column>
@@ -55,8 +60,8 @@
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
-		<addForeignKeyConstraint constraintName="street_city_fk" referencedTableName="city"
-								 baseColumnNames="city_id" baseTableName="street" referencedColumnNames="id"
+		<addForeignKeyConstraint constraintName="street_city_fk" referencedTableName="city" referencedTableSchemaName="address"
+								 baseColumnNames="city_id" baseTableName="street" referencedColumnNames="id" baseTableSchemaName="address"
 								 onDelete="CASCADE" onUpdate="CASCADE"/>
 		<rollback>
 			<dropTable tableName="street"/>
@@ -64,7 +69,7 @@
 	</changeSet>
 	
 	<changeSet id="4" author="postgres">
-		<loadData tableName="region"
+		<loadData tableName="region" schemaName="address"
 					file="classpath:/db/address_database/region.csv"
 					separator=";"
 					encoding="windows-1251">
@@ -74,7 +79,7 @@
 	</changeSet>
 	
 	<changeSet id="5" author="postgres">
-		<loadData tableName="city"
+		<loadData tableName="city" schemaName="address"
 					file="classpath:/db/address_database/city.csv"
 					separator=";"
 					encoding="windows-1251">
@@ -85,7 +90,7 @@
 	</changeSet>
 	
 	<changeSet id="6" author="postgres">
-		<loadData tableName="street"
+		<loadData tableName="street" schemaName="address"
 					file="classpath:/db/address_database/street.csv"
 					separator=";"
 					encoding="windows-1251">
