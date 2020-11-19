@@ -16,8 +16,11 @@ export default {
     "header-main": HeaderMain,
     "footer-main": FooterMain,
   },
+  methods: {},
+  created() {
+    console.log("hello");
+  },
 };
 </script>
 
-<style>
-</style>
+<style></style>

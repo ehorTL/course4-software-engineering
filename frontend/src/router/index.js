@@ -6,6 +6,10 @@ import UserProfile from "../views/user/UserProfile.vue";
 import Admin from "../views/Admin";
 import Manager from "../views/Manager";
 import Error from "../views/Error";
+import Readers from "../views/Readers";
+import ReaderInfo from "@/components/reader/ReaderInfo";
+import HomePageComponent from "@/components/main/HomePage";
+import SystemConfigs from "../views/SystemConfigs";
 
 Vue.use(VueRouter);
 
@@ -14,7 +18,19 @@ const routes = [
     path: "/",
     name: "Main",
     component: Main,
-    children: [],
+    children: [
+      {
+        path: "/profile",
+        name: "UserProfile",
+        component: UserProfile,
+      },
+      {
+        path: "/",
+        name: "HomePageComponent",
+        component: HomePageComponent,
+        children: [],
+      },
+    ],
   },
   {
     path: "/error",
@@ -23,7 +39,7 @@ const routes = [
     children: [],
   },
   {
-    path: "/admin",
+    path: "/admin/managers",
     name: "Admin",
     component: Admin,
     children: [],
@@ -35,15 +51,34 @@ const routes = [
     children: [],
   },
   {
+    path: "/manager/readers",
+    name: "Readers",
+    component: Readers,
+    children: [],
+  },
+  {
+    path: "/manager/readers/:id",
+    name: "ReaderInfo",
+    component: ReaderInfo,
+    props: true,
+    children: [],
+  },
+  {
     path: "/login",
     name: "LoginPage",
     component: LoginPage,
     children: [],
   },
   {
-    path: "/profile",
-    name: "UserProfile",
-    component: UserProfile,
+    path: "/manager/system-configs",
+    name: "system-configs",
+    component: SystemConfigs,
+  },
+  {
+    path: "*",
+    name: "Error",
+    component: Error,
+    redirect: "/error",
   },
   // {
   // path: "/about",

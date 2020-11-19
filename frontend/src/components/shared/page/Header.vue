@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-navbar toggleable="lg" type="light" variant="info">
+    <b-navbar toggleable="lg" type="light" variant="light">
       <!-- <b-navbar-brand href="#">NavBar</b-navbar-brand> -->
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
@@ -13,11 +13,15 @@
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <b-nav-item-dropdown text="Профіль" right>
-            <b-dropdown-item href="#" v-if="!$store.state.user.authorized"
-              >Вхід / Реєстрація</b-dropdown-item
+            <b-dropdown-item href="#" v-if="!$store.state.user.authorized">
+              <router-link :to="{ name: 'LoginPage' }"
+                >Вхід / Реєстрація</router-link
+              ></b-dropdown-item
             >
             <div v-if="$store.state.user.authorized">
-              <b-dropdown-item href="#">Профіль</b-dropdown-item>
+              <b-dropdown-item href="#">
+                <router-link :to="{ name: 'UserProfile' }">Профіль</router-link>
+              </b-dropdown-item>
               <b-dropdown-item href="#">Вийти</b-dropdown-item>
             </div>
           </b-nav-item-dropdown>
