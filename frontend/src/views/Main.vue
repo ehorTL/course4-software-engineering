@@ -1,8 +1,8 @@
 <template>
   <div>
-    <header-main></header-main>
-    <router-view />
-    <footer-main></footer-main>
+    <header-main class="header-style"></header-main>
+    <router-view class="center-style" />
+    <footer-main class="footer-style"></footer-main>
   </div>
 </template>
 
@@ -23,4 +23,14 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.footer-style {
+  min-height: 10vh;
+}
+.header-style {
+  min-height: 20vh;
+}
+.center-style {
+  min-height: 70vh;
+}
+</style>

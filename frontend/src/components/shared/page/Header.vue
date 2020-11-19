@@ -26,10 +26,22 @@
             >Видання</b-nav-item
           >
           <b-nav-item
+            v-if="$store.state.user.role === 'manager'"
+            exact-active-class="active"
+            :to="{ name: 'Reports' }"
+            >Звіти</b-nav-item
+          >
+          <b-nav-item
             v-if="$store.state.user.role === 'admin'"
             exact-active-class="active"
             :to="{ name: 'Admin' }"
             >Менеджери</b-nav-item
+          >
+          <b-nav-item
+            v-if="$store.state.user.role === 'admin'"
+            exact-active-class="active"
+            :to="{ name: 'system-configs' }"
+            >Системні налаштування</b-nav-item
           >
         </b-navbar-nav>
 

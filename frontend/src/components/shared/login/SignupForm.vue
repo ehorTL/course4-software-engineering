@@ -51,7 +51,12 @@
         placeholder="Повторіть пароль"
       ></b-form-input>
       <div class="mt-2">
-        <b-button style="width: 100%" variant="primary">Реєстрація</b-button>
+        <b-button
+          style="width: 100%"
+          variant="primary"
+          @click="registerAsReader"
+          >Реєстрація</b-button
+        >
       </div>
     </b-form>
   </div>
@@ -73,6 +78,9 @@ export default {
         },
       },
     };
+  },
+  methods: {
+    registerAsReader() {},
   },
 };
 </script>

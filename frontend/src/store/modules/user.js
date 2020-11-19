@@ -5,7 +5,7 @@ const user = {
     lastName: "",
     email: "",
     authorized: false,
-    role: "reader", // reader, manager, admin
+    role: "manager", // reader, manager, admin
   },
   actions: {},
   mutations: {

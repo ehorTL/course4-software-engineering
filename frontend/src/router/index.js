@@ -11,6 +11,7 @@ import ReaderInfo from "@/components/reader/ReaderInfo";
 import HomePageComponent from "@/components/main/HomePage";
 import SystemConfigs from "../views/SystemConfigs";
 import ManagerBooks from "@/components/shared/book/ManagerBooks";
+import Reports from "@/components/manager/Reports";
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,16 @@ const routes = [
     name: "Main",
     component: Main,
     children: [
+      {
+        path: "/manager/reports",
+        name: "Reports",
+        component: Reports,
+      },
+      {
+        path: "/manager/system-configs",
+        name: "system-configs",
+        component: SystemConfigs,
+      },
       {
         path: "/admin/managers",
         name: "Admin",
@@ -75,11 +86,6 @@ const routes = [
     name: "LoginPage",
     component: LoginPage,
     children: [],
-  },
-  {
-    path: "/manager/system-configs",
-    name: "system-configs",
-    component: SystemConfigs,
   },
   {
     path: "*",
