@@ -10,6 +10,7 @@ import Readers from "../views/Readers";
 import ReaderInfo from "@/components/reader/ReaderInfo";
 import HomePageComponent from "@/components/main/HomePage";
 import SystemConfigs from "../views/SystemConfigs";
+import ManagerBooks from "@/components/shared/book/ManagerBooks";
 
 Vue.use(VueRouter);
 
@@ -19,6 +20,24 @@ const routes = [
     name: "Main",
     component: Main,
     children: [
+      {
+        path: "/admin/managers",
+        name: "Admin",
+        component: Admin,
+        children: [],
+      },
+      {
+        path: "/manager/readers",
+        name: "Readers",
+        component: Readers,
+        children: [],
+      },
+      {
+        path: "/manager/books",
+        name: "ManagerBooks",
+        component: ManagerBooks,
+        children: [],
+      },
       {
         path: "/profile",
         name: "UserProfile",
@@ -39,21 +58,9 @@ const routes = [
     children: [],
   },
   {
-    path: "/admin/managers",
-    name: "Admin",
-    component: Admin,
-    children: [],
-  },
-  {
     path: "/manager",
     name: "Manager",
     component: Manager,
-    children: [],
-  },
-  {
-    path: "/manager/readers",
-    name: "Readers",
-    component: Readers,
     children: [],
   },
   {

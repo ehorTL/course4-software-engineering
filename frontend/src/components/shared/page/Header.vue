@@ -5,9 +5,32 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="#">Головна</b-nav-item>
+          <b-nav-item :to="{ name: 'HomePageComponent' }">Головна</b-nav-item>
           <b-nav-item href="#">Про бібліотеку</b-nav-item>
-          <b-nav-item href="#">Мій формуляр</b-nav-item>
+          <b-nav-item
+            v-if="$store.state.user.role === 'reader'"
+            exact-active-class="active"
+            :to="{ name: 'UserProfile' }"
+            >Мій формуляр</b-nav-item
+          >
+          <b-nav-item
+            v-if="$store.state.user.role === 'manager'"
+            exact-active-class="active"
+            :to="{ name: 'Readers' }"
+            >Читачі</b-nav-item
+          >
+          <b-nav-item
+            v-if="$store.state.user.role === 'manager'"
+            exact-active-class="active"
+            :to="{ name: 'ManagerBooks' }"
+            >Видання</b-nav-item
+          >
+          <b-nav-item
+            v-if="$store.state.user.role === 'admin'"
+            exact-active-class="active"
+            :to="{ name: 'Admin' }"
+            >Менеджери</b-nav-item
+          >
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->

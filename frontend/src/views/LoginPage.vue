@@ -4,7 +4,7 @@
       <div
         class="col-md-6 my-col d-flex align-items-center justify-content-center"
       >
-        <div class="login-logo-main">
+        <div class="login-logo-main" @click="goToMain">
           <b-img fluid src="/img/logo_main.png" class="rounded" alt=""></b-img>
         </div>
       </div>
@@ -33,19 +33,26 @@
                 >
               </div>
               <b-form-group class="text-center mt-2 mb-4">
-                <a href="javascript:void(0)">Забули пароль?</a>
+                <a href="javascript:void(0)" @click="forgotPassword"
+                  >Забули пароль?</a
+                >
               </b-form-group>
               <hr />
               <b-form-group class="text-center mt-0">
-                <a href="javascript:void(0)" @click="onCreateAccountClicked"
-                  >Створити обліковий запис</a
+                <b-button variant="primary" @click="onCreateAccountClicked">
+                  Створити обліковий запис</b-button
                 >
               </b-form-group>
             </b-form>
           </div>
-          <div v-show="state.creating_account">
-            <b-modal id="modal-1" title="BootstrapVue">
+          <div>
+            <b-modal id="modal-registering" title="Реєстрація">
               <signup-form></signup-form>
+            </b-modal>
+          </div>
+          <div>
+            <b-modal id="modal-forgot-pass" title="Забули пароль">
+              <forgot-password></forgot-password>
             </b-modal>
           </div>
         </div>
@@ -56,11 +63,13 @@
 
 <script>
 import SignupForm from "@/components/shared/login/SignupForm";
+import ForgotPassword from "@/components/shared/login/ForgotPassword";
 
 export default {
   name: "LoginPage",
   components: {
     "signup-form": SignupForm,
+    "forgot-password": ForgotPassword,
   },
   data() {
     return {
@@ -72,12 +81,18 @@ export default {
     };
   },
   methods: {
+    goToMain() {
+      this.$router.push({ name: "HomePageComponent" });
+    },
     onCreateAccountClicked() {
       // this.state.creating_account = true;
-      this.$bvModal.show("modal-1");
+      this.$bvModal.show("modal-registering");
     },
     login() {
       // todo
+    },
+    forgotPassword() {
+      this.$bvModal.show("modal-forgot-pass");
     },
   },
 };
@@ -104,5 +119,8 @@ body,
 }
 .login-logo-main {
   max-width: 300px;
+}
+.login-logo-main:hover {
+  cursor: pointer;
 }
 </style>
