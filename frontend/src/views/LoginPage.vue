@@ -12,10 +12,9 @@
         class="col-md-6 my-col d-flex align-items-center justify-content-center"
       >
         <div class="login-block shadow p-3 mb-5 bg-white rounded">
-          <div v-show="!state.creating_account">
+          <div>
             <b-form>
               <b-form-input
-                id="input-1"
                 v-model="email"
                 type="email"
                 required
@@ -23,7 +22,6 @@
               ></b-form-input>
               <b-form-input
                 class="mt-2"
-                id="input-2"
                 v-model="password"
                 type="password"
                 required
@@ -46,7 +44,9 @@
             </b-form>
           </div>
           <div v-show="state.creating_account">
-            <signup-form></signup-form>
+            <b-modal id="modal-1" title="BootstrapVue">
+              <signup-form></signup-form>
+            </b-modal>
           </div>
         </div>
       </div>
@@ -73,7 +73,8 @@ export default {
   },
   methods: {
     onCreateAccountClicked() {
-      this.state.creating_account = true;
+      // this.state.creating_account = true;
+      this.$bvModal.show("modal-1");
     },
     login() {
       // todo
