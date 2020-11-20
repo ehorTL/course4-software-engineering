@@ -4,8 +4,8 @@ const user = {
     secondName: "",
     lastName: "",
     email: "",
-    authorized: false,
-    role: "manager", // reader, manager, admin
+    authorized: true,
+    role: "reader", // reader, manager, admin
   },
   actions: {},
   mutations: {

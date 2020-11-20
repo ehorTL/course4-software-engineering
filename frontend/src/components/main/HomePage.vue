@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="container-fluid">
-      <div class="row">
+      <!-- <div class="row">
         <div class="col">push some info here</div>
-      </div>
+      </div> -->
       <div class="row">
         <div class="col-2 left-col">
           <span>Шукати за параметрами</span>
@@ -77,9 +77,7 @@
             </b-form>
           </div>
         </div>
-        <div class="col-2 right-col">
-          three cards of top-3 books or ads
-        </div>
+        <div class="col-2 right-col">three cards of top-3 books or ads</div>
       </div>
     </div>
   </div>

@@ -1,144 +1,167 @@
 <template>
-  <b-container fluid>
-    <b-row>
-      <b-col md="6" sm="12">
-        <b-row>
-          <b-col>
-            <div class="publication-img">
-              <b-img
-                fluid
-                v-if="publication.descr_photo"
-                :src="publication.descr_photo"
-              ></b-img>
-              <b-img
-                v-else
-                :src="$store.state.publication.default_image"
-                fluid
-              ></b-img>
-            </div>
-          </b-col>
-          <b-col>
-            <p>Title: {{ publication.title }}</p>
-            <p>Subject: {{ publication.subject_id }}</p>
-            <p>Creator: {{ publication.creator }}</p>
-            <p>Source: {{ publication.source }}</p>
-            <p>Publisher: {{ publication.publisher }}</p>
-            <p>Publication date: {{ publication.publication_date }}</p>
-            <p>Contributor: {{ publication.contributor }}</p>
-            <p>Rights: {{ publication.rights }}</p>
-            <p>Format: {{ publication.format }}</p>
-            <p>Language: {{ publication.language }}</p>
-            <p>Type: {{ publication.type_id }}</p>
-            <p>Edition: {{ publication.edition }}</p>
-          </b-col>
-        </b-row>
-        <!-- <div class="publication-passport"></div> -->
-      </b-col>
-      <b-col md="6" sm="12">
-        <b-form>
-          <b-form-group description="Title">
-            <b-form-input
-              type="text"
-              v-model="publication.title"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group description="Subject">
-            <b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.subject_id"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group description="Creator">
-            <b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.creator"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group description="Source">
-            <b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.source"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group description="Publisher">
-            <b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.publisher"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group description="Publication date">
-            <b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.publication_date"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group description="Contributor"
-            ><b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.contributor"
-            ></b-form-input
-          ></b-form-group>
-          <b-form-group description="Rights"
-            ><b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.rights"
-            ></b-form-input
-          ></b-form-group>
-          <b-form-group description="Format">
-            <b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.format"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group description="Language"
-            ><b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.language"
-            ></b-form-input
-          ></b-form-group>
-          <b-form-group description="Publication type">
-            <b-form-select
-              class="mt-2"
-              v-model="publication.publ_type"
-              :options="publication_types"
+  <div>
+    <b-container fluid>
+      <b-row>
+        <b-col md="6" sm="12">
+          <b-row>
+            <b-col>
+              <div class="publication-img">
+                <b-img
+                  fluid
+                  v-if="publication.descr_photo"
+                  :src="publication.descr_photo"
+                ></b-img>
+                <b-img
+                  v-else
+                  :src="$store.state.publication.default_image"
+                  fluid
+                ></b-img>
+              </div>
+            </b-col>
+            <b-col>
+              <p>Title: {{ publication.title }}</p>
+              <p>Subject: {{ publication.subject_id }}</p>
+              <p>Creator: {{ publication.creator }}</p>
+              <p>Source: {{ publication.source }}</p>
+              <p>Publisher: {{ publication.publisher }}</p>
+              <p>Publication date: {{ publication.publication_date }}</p>
+              <p>Contributor: {{ publication.contributor }}</p>
+              <p>Rights: {{ publication.rights }}</p>
+              <p>Format: {{ publication.format }}</p>
+              <p>Language: {{ publication.language }}</p>
+              <p>Type: {{ publication.type_id }}</p>
+              <p>Edition: {{ publication.edition }}</p>
+            </b-col>
+          </b-row>
+          <!-- <div class="publication-passport"></div> -->
+        </b-col>
+        <b-col md="6" sm="12">
+          <b-form>
+            <b-form-group description="Title">
+              <b-form-input
+                type="text"
+                v-model="publication.title"
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group description="Subject">
+              <b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.subject_id"
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group description="Creator">
+              <b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.creator"
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group description="Source">
+              <b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.source"
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group description="Publisher">
+              <b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.publisher"
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group description="Publication date">
+              <b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.publication_date"
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group description="Contributor"
+              ><b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.contributor"
+              ></b-form-input
+            ></b-form-group>
+            <b-form-group description="Rights"
+              ><b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.rights"
+              ></b-form-input
+            ></b-form-group>
+            <b-form-group description="Format">
+              <b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.format"
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group description="Language"
+              ><b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.language"
+              ></b-form-input
+            ></b-form-group>
+            <b-form-group description="Publication type">
+              <b-form-select
+                class="mt-2"
+                v-model="publication.publ_type"
+                :options="publication_types"
+              >
+                <template #first>
+                  <b-form-select-option :value="null" disabled
+                    >Виберіть тип публікації</b-form-select-option
+                  >
+                </template>
+              </b-form-select>
+            </b-form-group>
+            <b-form-group description="Edition"
+              ><b-form-input
+                class="mt-2"
+                type="text"
+                v-model="publication.edition"
+              ></b-form-input
+            ></b-form-group>
+            <b-form-group description="Description text">
+              <b-form-textarea
+                v-model="publication.descr_text"
+                placeholder="Enter description"
+                rows="3"
+                max-rows="6"
+                class="mt-2"
+              ></b-form-textarea>
+            </b-form-group>
+            <b-form-file
+              v-model="publication.file_digital_version"
+              :state="Boolean(publication.file_digital_version)"
+              placeholder="Choose a file or drop it here..."
+              drop-placeholder="Drop file here..."
+            ></b-form-file>
+            <b-button @click="saveChanges" variant="primary" class="mt-3"
+              >Зберегти</b-button
             >
-              <template #first>
-                <b-form-select-option :value="null" disabled
-                  >Виберіть тип публікації</b-form-select-option
-                >
-              </template>
-            </b-form-select>
-          </b-form-group>
-          <b-form-group description="Edition"
-            ><b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.edition"
-            ></b-form-input
-          ></b-form-group>
-          <b-form-group description="Description text">
-            <b-form-input
-              class="mt-2"
-              type="text"
-              v-model="publication.descr_text"
-            ></b-form-input>
-          </b-form-group>
-          <b-button @click="saveChanges" variant="primary" class="mt-3"
-            >Зберегти</b-button
+          </b-form>
+        </b-col>
+      </b-row>
+    </b-container>
+    <b-container fluid class="mt-5">
+      <b-row>
+        <b-col md="12">
+          <b-button variant="primary" @click="addCatalogEntry"
+            >Додати видання</b-button
           >
-        </b-form>
-      </b-col>
-    </b-row>
-  </b-container>
+          <b-table
+            :fields="catalog_entries.fields"
+            :items="catalog_entries.catalog_entries_related"
+          ></b-table>
+        </b-col>
+      </b-row>
+    </b-container>
+  </div>
 </template>
 
 <script>
@@ -163,9 +186,36 @@ export default {
         type_id: 1, // not used
         publ_type: null,
         edition: "",
+
+        file_digital_version: "",
       },
       publication_types: [],
       publication_subjects: [],
+
+      catalog_entries: {
+        fields: [
+          "id",
+          "item_number",
+          "copies",
+          "available_from",
+          "loan_days",
+          "more",
+          "delete",
+        ],
+        catalog_entries_related: [
+          {
+            id: 1,
+            publication_id: 4,
+            library_id: 12,
+            item_number: 1212,
+            status_id: 12,
+            available_from: "",
+            copies_number: "",
+            copies_available: "",
+            loan_days: "",
+          },
+        ],
+      },
     };
   },
   created() {
@@ -184,6 +234,19 @@ export default {
   methods: {
     saveChanges() {
       // todo
+    },
+    addCatalogEntry() {
+      this.catalog_entries.catalog_entries_related.unshift({
+        id: "new",
+        publication_id: 4,
+        library_id: 12,
+        item_number: 1212,
+        status_id: 12,
+        available_from: "",
+        copies_number: "",
+        copies_available: "",
+        loan_days: "",
+      });
     },
   },
 };

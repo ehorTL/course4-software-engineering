@@ -142,7 +142,7 @@ export default {
     },
     addPublication() {
       this.books.unshift({
-        id: "?",
+        id: "new",
         title: "Назва книги",
         author: "Автор",
         // todo

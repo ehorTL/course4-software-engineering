@@ -10,7 +10,7 @@
           <b-nav-item
             v-if="$store.state.user.role === 'reader'"
             exact-active-class="active"
-            :to="{ name: 'UserProfile' }"
+            :to="{ name: 'MyBooks' }"
             >Мій формуляр</b-nav-item
           >
           <b-nav-item

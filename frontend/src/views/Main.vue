@@ -29,11 +29,11 @@ export default {
   background-color: #f0f2f5;
 }
 .header-style {
-  min-height: 20vh;
+  min-height: 5vh;
   background-color: #f0f2f5;
 }
 .center-style {
-  min-height: 70vh;
+  min-height: 85vh;
   background-color: #f0f2f5;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-secondary">
     <footer class="container-fluid text-center">
       <p style="font-size: 10px">&#169;REMLIB 2020</p>
     </footer>
@@ -11,4 +11,4 @@ export default {};
 </script>
 
 <style>
-</style>template
+</style>

@@ -14,6 +14,8 @@ import ManagerBooks from "@/components/shared/book/ManagerBooks";
 import Reports from "@/components/manager/Reports";
 import AboutLibrary from "@/components/shared/section/AboutLibrary";
 import Book from "@/components/shared/book/Book";
+import ReaderBook from "@/components/shared/book/ReaderBook";
+import MyBooks from "@/components/reader/MyBooks.vue";
 
 Vue.use(VueRouter);
 
@@ -30,9 +32,20 @@ const routes = [
         children: [],
       },
       {
+        path: "/reader/my-books",
+        name: "MyBooks",
+        component: MyBooks,
+      },
+      {
         path: "/about",
         name: "AboutLibrary",
         component: AboutLibrary,
+      },
+      {
+        path: "/reader/book/:id",
+        name: "ReaderBook",
+        component: ReaderBook,
+        props: true,
       },
       {
         path: "/manager/book/:bookId",
