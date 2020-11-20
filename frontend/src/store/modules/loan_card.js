@@ -3,7 +3,19 @@ const loan_card = {
   loan_statuses: [
     {
       id: 1,
-      name: "Some loan status",
+      name: "requested",
+    },
+    {
+      id: 2,
+      name: "queue",
+    },
+    {
+      id: 3,
+      name: "checked out",
+    },
+    {
+      id: 4,
+      name: "checked in",
     },
   ],
 };

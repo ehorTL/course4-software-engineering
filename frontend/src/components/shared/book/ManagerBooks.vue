@@ -32,8 +32,10 @@
             </b-col>
           </b-form-row>
         </b-form>
-        <div>
-          <b-button @click="addPublication">Додати публікацію</b-button>
+        <div class="mt-5">
+          <b-button @click="addPublication" variant="primary"
+            >Додати публікацію</b-button
+          >
           <b-table striped hover :items="books" :fields="fields" responsive>
             <template #cell(show_details)="row">
               <b-button
