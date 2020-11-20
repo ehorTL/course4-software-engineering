@@ -6,7 +6,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item :to="{ name: 'HomePageComponent' }">Головна</b-nav-item>
-          <b-nav-item href="#">Про бібліотеку</b-nav-item>
+          <b-nav-item :to="{ name: 'AboutLibrary' }">Про бібліотеку</b-nav-item>
           <b-nav-item
             v-if="$store.state.user.role === 'reader'"
             exact-active-class="active"

@@ -12,6 +12,8 @@ import HomePageComponent from "@/components/main/HomePage";
 import SystemConfigs from "../views/SystemConfigs";
 import ManagerBooks from "@/components/shared/book/ManagerBooks";
 import Reports from "@/components/manager/Reports";
+import AboutLibrary from "@/components/shared/section/AboutLibrary";
+import Book from "@/components/shared/book/Book";
 
 Vue.use(VueRouter);
 
@@ -21,6 +23,23 @@ const routes = [
     name: "Main",
     component: Main,
     children: [
+      {
+        path: "/error",
+        name: "Error",
+        component: Error,
+        children: [],
+      },
+      {
+        path: "/about",
+        name: "AboutLibrary",
+        component: AboutLibrary,
+      },
+      {
+        path: "/manager/book/:bookId",
+        name: "ManagerBook",
+        component: Book,
+        props: true,
+      },
       {
         path: "/manager/reports",
         name: "Reports",
@@ -61,12 +80,6 @@ const routes = [
         children: [],
       },
     ],
-  },
-  {
-    path: "/error",
-    name: "Error",
-    component: Error,
-    children: [],
   },
   {
     path: "/manager",
