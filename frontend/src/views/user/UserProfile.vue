@@ -6,14 +6,22 @@
           <b-card>
             <div class="text-center">Картка користувача</div>
             <div>
-              {{ $store.state.user.firstName + " " + $store.state.user.secondName + " " + $store.state.user.lastName }}
+              {{
+                $store.state.user.firstName +
+                " " +
+                $store.state.user.secondName +
+                " " +
+                $store.state.user.lastName
+              }}
             </div>
             <div>
               {{ $store.state.user.birthday }}
             </div>
             <div>Tel: {{ $store.state.user.phone }}</div>
             <div>Email: {{ $store.state.user.email }}</div>
-            <div>Книжок на руках: {{ reader.books_on_hands }}</div>
+            <div v-if="$store.state.user.role == 'reader'">
+              Книжок на руках: {{ reader.books_on_hands }}
+            </div>
             <div class="text-center">
               <a
                 href="javascript:void(0)"
@@ -38,7 +46,23 @@
         <div class="col-6">
           <b-card>
             <div>Нагадування</div>
-            <div>У вас жодних нагадувань</div>
+            <div
+              v-if="
+                $store.state.user.user_notification_messages != null &&
+                $store.state.user.user_notification_messages.length != 0
+              "
+            >
+              <ul>
+                <li
+                  v-for="(n, index) in $store.state.user
+                    .user_notification_messages"
+                  :key="index"
+                >
+                  {{ n }}
+                </li>
+              </ul>
+            </div>
+            <div v-else>У вас жодних нагадувань</div>
           </b-card>
           <b-card v-if="state.edit_opened" header-tag="featured">
             <div>
@@ -151,12 +175,12 @@ export default {
   data() {
     return {
       reader: {
-        name: "man",
-        patronymic: "manovich",
-        surname: "mann",
-        birthday: "12.03.2001",
-        phone: "+380987654321",
-        email: "email@email.email",
+        name: "",
+        patronymic: "",
+        surname: "",
+        birthday: "",
+        phone: "",
+        email: "",
         books_on_hands: 3,
         new_password: {
           pass: "",
@@ -169,13 +193,23 @@ export default {
       },
     };
   },
-  beforeCreate() {
-  },
+  beforeCreate() {},
   created() {
-    console.log(this.$store.state.user);
-    // :firstName="this.$store.state.user.firstName"
-    //   :partonymic="this.$store.state.user.secondName"
-    //   :surname="this.$store.state.user.lastName"
+    // getuser and save to store
+    let userId = this.$store.getters.savedUserId;
+    let userToken = this.$store.getters.savedToken;
+    const self = this;
+    this.$store
+      .dispatch("getUser", {
+        email: userId,
+        token: userToken,
+      })
+      .then(function (response) {
+        self.$store.commit("login", response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   },
   methods: {
     getReader(readerId) {

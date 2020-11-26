@@ -109,7 +109,9 @@ export default {
         .then(function () {
           self.goToMain();
         })
-        .catch(function () {});
+        .catch(() => {
+          console.log("Error in readers data fetching");
+        });
     },
     formIsValid() {
       let isValid = true;
@@ -121,7 +123,7 @@ export default {
           this.state.errors.push("Надто короткий пароль. Спробуйте ще раз.");
           isValid = false;
         }
-        if (!/[\w_\d]+@knu\.ua/.test(this.email)) {
+        if (!/^[\w_\d]+@knu\.ua$/.test(this.email)) {
           this.state.errors.push("Введіть коректно пошту з домену knu.ua");
           isValid = false;
         }

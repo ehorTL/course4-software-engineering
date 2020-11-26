@@ -7,13 +7,14 @@ const user = {
     secondName: "",
     lastName: "",
     email: "",
-    authorized: true,
-    role: "manager", // reader, manager, admin
-    auth_token: "werftghyjkl0oiu6456tyui",
+    authorized: false,
+    role: "", // reader, manager, admin
+    auth_token: "",
     birthday: "",
     phone: "",
     fee: 0,
     role_id: "",
+    user_notification_messages: [],
 
     reders: [],
     managers: [],
@@ -32,17 +33,14 @@ const user = {
       let url = globals.remlib_api_host + globals.auth;
       console.log(payload);
 
-      axios
+      return axios
         .post(url, payload)
         .then(function(response) {
-          context.commit("saveToken", response.data.token);
+          context.commit("saveToken", response.data);
           return context.dispatch("getUser", {
             email: payload.email,
             token: response.data.token,
           });
-        })
-        .catch(function(error) {
-          console.log(error.response);
         })
         .then(function(response) {
           context.commit("login", response.data);
@@ -89,9 +87,12 @@ const user = {
       state.fee = payload.fee;
       state.role_id = payload.role.id;
       state.email = payload.email;
+
+      localStorage.setItem("user-id", payload.email);
     },
     saveToken(state, payload) {
       state.auth_token = payload.token;
+      localStorage.setItem("user-token", payload.token);
     },
     setManagers(state, payload) {
       state.managers = payload.managers;
@@ -100,7 +101,32 @@ const user = {
       state.readers = payload.readers;
     },
   },
-  getters: {},
+  getters: {
+    savedToken: (state) => {
+      if (
+        state.auth_token !== undefined &&
+        state.auth_token != null &&
+        state.auth_token != ""
+      ) {
+        return state.auth_token;
+      } else if (localStorage.getItem("user-token") !== undefined) {
+        console.log("here");
+        console.log(localStorage.getItem("user-token"));
+        return localStorage.getItem("user-token");
+      }
+
+      return "";
+    },
+    savedUserId: (state) => {
+      if (state.email != "") {
+        return state.email;
+      } else if (localStorage.getItem("user-id") !== undefined) {
+        return localStorage.getItem("user-id");
+      }
+
+      return "";
+    },
+  },
 };
 
 export default user;
