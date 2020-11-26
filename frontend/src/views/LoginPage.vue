@@ -60,6 +60,9 @@
         </div>
       </div>
     </b-row>
+    <b-toast variant="danger" v-on:hide="state.errors = []" id="errors-toast">
+      <div v-for="(e, index) in state.errors" :key="index">{{ e }}</div>
+    </b-toast>
   </b-container>
 </template>
 
@@ -76,6 +79,7 @@ export default {
   data() {
     return {
       state: {
+        errors: [],
         creating_account: false,
       },
       email: "",
@@ -91,6 +95,11 @@ export default {
       this.$bvModal.show("modal-registering");
     },
     login() {
+      if (!this.formIsValid()) {
+        this.showErrors();
+        return;
+      }
+
       let self = this;
       this.$store
         .dispatch("login", {
@@ -102,7 +111,27 @@ export default {
         })
         .catch(function () {});
     },
-    validateLoginForm() {},
+    formIsValid() {
+      let isValid = true;
+      if (this.email.trim() == "" || this.password == "") {
+        this.state.errors.push("Введіть логін та пароль");
+        isValid = false;
+      } else {
+        if (this.password.length < 8) {
+          this.state.errors.push("Надто короткий пароль. Спробуйте ще раз.");
+          isValid = false;
+        }
+        if (!/[\w_\d]+@knu\.ua/.test(this.email)) {
+          this.state.errors.push("Введіть коректно пошту з домену knu.ua");
+          isValid = false;
+        }
+      }
+
+      return isValid;
+    },
+    showErrors() {
+      this.$bvToast.show("errors-toast");
+    },
     forgotPassword() {
       this.$bvModal.show("modal-forgot-pass");
     },
@@ -116,7 +145,9 @@ export default {
       this.closeRegistration();
     },
   },
-  created() {},
+  created() {
+    console.log(this.state.errors);
+  },
 };
 </script>
 
