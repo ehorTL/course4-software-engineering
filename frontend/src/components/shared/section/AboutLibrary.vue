@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-container class="mt-5">
+    <b-container>
       <b-row>
         <b-col>
           <div class="main-font">

@@ -56,6 +56,16 @@ export default {
         },
       ];
     },
+    getReadersAll(){
+      let self = this;
+      this.$axios.get('https://yehor.free.beeceptor.com/readers')
+      .then(response => {
+        console.log(response);
+        self.readers = self.mapReaders(response.data);
+      }).catch( error => {
+        console.log(error)
+      });
+    },
     deactivateReader(index, id) {
       console.log(index, id);
       this.readers[index].active = !this.readers[index].active;
@@ -65,9 +75,25 @@ export default {
 
       this.$router.push({ name: "ReaderInfo", params: { id: readerId } });
     },
+    mapReaders(readersResponse){
+    return readersResponse.map(reader => {
+          return {
+          id: 'default',
+          name: reader.name,
+          patronymic: reader.patronymic,
+          surname: reader.surname,
+          email: reader.email,
+          role: reader.role.role,
+          detailsShowing: false,
+          phone: "",
+          fee: 0,
+          active: true,};
+    });
+  },
   },
   created() {
-    this.getReaders(1, this.$store.state.global_configs.readers_per_page);
+    this.getReadersAll();
+    // this.getReaders(1, this.$store.state.global_configs.readers_per_page);
   },
 };
 </script>

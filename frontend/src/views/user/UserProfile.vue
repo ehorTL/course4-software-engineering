@@ -4,15 +4,15 @@
       <div class="row">
         <div class="col-6">
           <b-card>
-            <div class="text-center">Картка читача</div>
+            <div class="text-center">Картка користувача</div>
             <div>
-              {{ reader.name + " " + reader.patronymic + " " + reader.surname }}
+              {{ $store.state.user.firstName + " " + $store.state.user.secondName + " " + $store.state.user.lastName }}
             </div>
             <div>
-              {{ reader.birthday }}
+              {{ $store.state.user.birthday }}
             </div>
-            <div>Tel: {{ reader.phone }}</div>
-            <div>Email: {{ reader.email }}</div>
+            <div>Tel: {{ $store.state.user.phone }}</div>
+            <div>Email: {{ $store.state.user.email }}</div>
             <div>Книжок на руках: {{ reader.books_on_hands }}</div>
             <div class="text-center">
               <a
@@ -170,10 +170,6 @@ export default {
     };
   },
   beforeCreate() {
-    // test
-    this.$store.commit("setFirstName", "Danni");
-    this.$store.commit("setSecondName", "Danilovich");
-    this.$store.commit("setLastName", "Didro");
   },
   created() {
     console.log(this.$store.state.user);

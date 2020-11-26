@@ -47,6 +47,9 @@ Vue.use(VueMask);
 
 Vue.config.productionTip = false;
 
+import { const_globals as globals } from "@/helpers/globals";
+Vue.prototype.$globals = globals;
+
 new Vue({
   router,
   store,

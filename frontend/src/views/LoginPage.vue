@@ -1,16 +1,12 @@
 <template>
-  <div class="containter-fluid">
-    <div class="row">
-      <div
-        class="col-md-6 my-col d-flex align-items-center justify-content-center"
-      >
+  <b-container fluid>
+    <b-row class="my-col">
+      <div class="col-md-6 d-flex align-items-center justify-content-center">
         <div class="login-logo-main" @click="goToMain">
           <b-img fluid src="/img/logo_main.png" class="rounded" alt=""></b-img>
         </div>
       </div>
-      <div
-        class="col-md-6 my-col d-flex align-items-center justify-content-center"
-      >
+      <div class="col-md-6 d-flex align-items-center justify-content-center">
         <div class="login-block shadow p-3 mb-5 bg-white rounded">
           <div>
             <b-form>
@@ -47,7 +43,13 @@
           </div>
           <div>
             <b-modal id="modal-registering" title="Реєстрація">
-              <signup-form></signup-form>
+              <signup-form
+                v-on:reader-registered="closeRegistrationSuccess"
+                v-on:error-in-registration="closeRegistrationFail"
+              ></signup-form>
+              <template #modal-footer class="justify-content-start">
+                <b-button @click="closeRegistration">Cancel</b-button>
+              </template>
             </b-modal>
           </div>
           <div>
@@ -57,8 +59,8 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
@@ -89,12 +91,32 @@ export default {
       this.$bvModal.show("modal-registering");
     },
     login() {
-      // todo
+      let self = this;
+      this.$store
+        .dispatch("login", {
+          email: this.email,
+          password: this.password,
+        })
+        .then(function () {
+          self.goToMain();
+        })
+        .catch(function () {});
     },
+    validateLoginForm() {},
     forgotPassword() {
       this.$bvModal.show("modal-forgot-pass");
     },
+    closeRegistration() {
+      this.$bvModal.hide("modal-registering");
+    },
+    closeRegistrationSuccess() {
+      this.closeRegistration();
+    },
+    closeRegistrationFail() {
+      this.closeRegistration();
+    },
   },
+  created() {},
 };
 </script>
 

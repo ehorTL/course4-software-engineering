@@ -57,7 +57,8 @@
               <b-dropdown-item href="#">
                 <router-link :to="{ name: 'UserProfile' }">Профіль</router-link>
               </b-dropdown-item>
-              <b-dropdown-item href="#">Вийти</b-dropdown-item>
+              <b-dropdown-item href="#" @click="logout">
+                <a href="javascript:void(0)">Вийти</a></b-dropdown-item>
             </div>
           </b-nav-item-dropdown>
         </b-navbar-nav>
@@ -67,7 +68,17 @@
 </template>
 
 <script>
-export default {};
+export default {
+  methods: {
+    logout(){
+      this.$store.dispatch('logout');
+      this.goToLoginPage();
+    },
+    goToLoginPage() {
+      this.$router.push({ name: "LoginPage" });
+    },
+  }
+};
 </script>
 
 <style>

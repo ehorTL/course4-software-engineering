@@ -1,85 +1,42 @@
 <template>
   <div>
-    <div class="container-fluid">
-      <!-- <div class="row">
-        <div class="col">push some info here</div>
-      </div> -->
-      <div class="row">
-        <div class="col-2 left-col">
-          <span>Шукати за параметрами</span>
-          <b-button squared variant="outline-danger" @click="clearFilters"
-            >Очистити фільтри</b-button
-          >
-          <div>
-            <b-form-checkbox
-              id="checkbox-1"
-              v-model="search_options.by.title"
-              name="checkbox-1"
+    <b-container fluid>
+      <b-row>
+        <b-col cols="12" md="3">
+          <b-card class="shadow-sm" style="width: unset !important">
+            <div>Фільтри</div>
+            <b-form-checkbox v-model="state.filters.by.name"
+              >Назва</b-form-checkbox
             >
-              назва
-            </b-form-checkbox>
-            <div>
-              <!-- some extra info -->
-            </div>
-          </div>
-          <div>
-            <b-form-checkbox
-              id="checkbox-2"
-              v-model="search_options.by.isbn"
-              name="checkbox-1"
+            <b-form-checkbox v-model="state.filters.by.author"
+              >Автор</b-form-checkbox
             >
-              ISBN
-            </b-form-checkbox>
-            <div>
-              <!-- some extra info -->
-            </div>
-          </div>
-          <div>
-            <b-form-checkbox
-              id="checkbox-3"
-              v-model="search_options.by.author"
-              name="checkbox-1"
+            <b-form-checkbox v-model="state.filters.by.isbn"
+              >ISBN</b-form-checkbox
             >
-              автор
-            </b-form-checkbox>
-            <div>
-              <!-- some extra info -->
+            <b-form-checkbox v-model="state.filters.by.library_book_number"
+              >Бібліотечний номер</b-form-checkbox
+            >
+            <div class="clear-btn text-center" @click="clearFilters">
+              Очистити фільтри <b-icon icon="x-square"></b-icon>
             </div>
-          </div>
-        </div>
-        <div class="col-8 text-center center-col">
-          <div>
-            <b-form inline>
-              <b-form-input
-                id="inline-form-input-name"
-                class="mb-2 mr-sm-2 mb-sm-0"
-                placeholder="Введіть назву видання..."
-              ></b-form-input>
-              <b-button variant="primary">Шукати</b-button>
-            </b-form>
-          </div>
-          <div v-show="search_options.by.author === true">
-            <b-form inline>
-              <b-form-input
-                id="inline-form-input-name"
-                class="mb-2 mr-sm-2 mb-sm-0"
-                placeholder="Введіть автора"
-              ></b-form-input>
-            </b-form>
-          </div>
-          <div v-show="search_options.by.isbn === true">
-            <b-form inline>
-              <b-form-input
-                id="inline-form-input-name"
-                class="mb-2 mr-sm-2 mb-sm-0"
-                placeholder="Введіть ISBN видання"
-              ></b-form-input>
-            </b-form>
-          </div>
-        </div>
-        <div class="col-2 right-col">three cards of top-3 books or ads</div>
-      </div>
-    </div>
+          </b-card>
+        </b-col>
+        <b-col cols="12" md="7">
+          <b-form>
+          <b-form-row>
+            <b-col md="10">
+              <b-form-input type="text"></b-form-input>
+            </b-col>
+            <b-col md="2">
+              <b-button variant="primary">Пошук</b-button>
+            </b-col>
+          </b-form-row>
+        </b-form>
+        </b-col>
+        <b-col cols="12" md="3">fd</b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
@@ -87,23 +44,28 @@
 export default {
   data() {
     return {
-      search_options: {
-        // boolean
-        by: {
-          title: "",
-          isbn: "",
-          i_dont_now: "",
-          author: "",
+      state: {
+        pages: 100,
+        current_page: 1,
+        per_page: 3,
+        go_to_page: 1,
+        filters: {
+          by: {
+            name: true,
+            author: false,
+            isbn: false,
+            library_book_number: false,
+          },
         },
       },
     };
   },
   methods: {
     clearFilters() {
-      this.search_options.by.title = false;
-      this.search_options.by.isbn = false;
-      this.search_options.by.author = false;
-      this.search_options.by.i_dont_now = true;
+      this.state.filters.by.name = true;
+      this.state.filters.by.author = false;
+      this.state.filters.by.isbn = false;
+      this.state.filters.by.library_book_number = false;
     },
   },
 };
@@ -118,5 +80,16 @@ export default {
 }
 .right-col {
   background-color: burlywood;
+}
+</style>
+
+<style scoped>
+.clear-btn {
+  font-size: 12px;
+  color: red;
+  text-decoration: underline;
+}
+.clear-btn:hover {
+  cursor: pointer;
 }
 </style>

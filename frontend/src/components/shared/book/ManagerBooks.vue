@@ -1,7 +1,7 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-2">
+  <b-container fluid>
+    <b-row>
+      <b-col cols="12" md="3" lg="2">
         <b-card class="shadow-sm" style="width: unset !important">
           <div>Фільтри</div>
           <b-form-checkbox v-model="state.filters.by.name"
@@ -20,8 +20,8 @@
             Очистити фільтри <b-icon icon="x-square"></b-icon>
           </div>
         </b-card>
-      </div>
-      <div class="col-10">
+      </b-col>
+      <b-col cols="12" md="9" lg="10">
         <b-form>
           <b-form-row>
             <b-col md="10">
@@ -43,7 +43,7 @@
                 @click="row.toggleDetails"
                 class="mr-2"
                 v-b-popover.hover.top="
-                  'Натисніть щоб переглнути інформацію про публікацію'
+                  'Інформація про публікацію'
                 "
                 >Детальніше
               </b-button>
@@ -70,8 +70,8 @@
             </template>
           </b-table>
         </div>
-      </div>
-    </div>
+      </b-col>
+    </b-row>
     <div class="row">
       <div class="col">
         <b-pagination
@@ -97,7 +97,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </b-container>
 </template>
 
 <script>

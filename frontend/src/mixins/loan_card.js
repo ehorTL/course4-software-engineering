@@ -11,11 +11,12 @@ export default {
   },
   methods: {
     loan_statuses_en2ua(statuses) {
+      const self = this;
       return statuses.map((s) => {
-        if (this.dict[s.status.toLowerCase()] !== undefined) {
+        if (self.dict[s.status.toLowerCase()] !== undefined) {
           return {
             id: s.id,
-            status: this.dict[s.status.toLowerCase()],
+            status: self.dict[s.status.toLowerCase()],
           };
         } else return s;
       });
