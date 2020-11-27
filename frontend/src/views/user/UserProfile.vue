@@ -4,23 +4,25 @@
       <div class="row">
         <div class="col-6">
           <b-card>
-            <div class="text-center">Картка користувача</div>
-            <div>
-              {{
-                $store.state.user.firstName +
-                " " +
-                $store.state.user.secondName +
-                " " +
-                $store.state.user.lastName
-              }}
-            </div>
-            <div>
-              {{ $store.state.user.birthday }}
-            </div>
-            <div>Tel: {{ $store.state.user.phone }}</div>
-            <div>Email: {{ $store.state.user.email }}</div>
-            <div v-if="$store.state.user.role == 'reader'">
-              Книжок на руках: {{ reader.books_on_hands }}
+            <div class="text-center user-card-header">Картка користувача</div>
+            <div class="user-card-main-text">
+              <div>
+                {{
+                  $store.state.user.firstName +
+                  " " +
+                  $store.state.user.secondName +
+                  " " +
+                  $store.state.user.lastName
+                }}
+              </div>
+              <div>
+                {{ $store.state.user.birthday }}
+              </div>
+              <div>Tel: {{ $store.state.user.phone }}</div>
+              <div>Email: {{ $store.state.user.email }}</div>
+              <div v-if="$store.state.user.role == 'reader'">
+                Книжок на руках: {{ reader.books_on_hands }}
+              </div>
             </div>
             <div class="text-center">
               <a
@@ -45,8 +47,9 @@
         </div>
         <div class="col-6">
           <b-card>
-            <div>Нагадування</div>
+            <div class="notification-header">Нагадування</div>
             <div
+              class="notification-messages"
               v-if="
                 $store.state.user.user_notification_messages != null &&
                 $store.state.user.user_notification_messages.length != 0
@@ -62,7 +65,9 @@
                 </li>
               </ul>
             </div>
-            <div v-else>У вас жодних нагадувань</div>
+            <div class="notification-messages" v-else>
+              У вас жодних нагадувань
+            </div>
           </b-card>
           <b-card v-if="state.edit_opened" header-tag="featured">
             <div>
@@ -80,11 +85,6 @@
               <b-form-input
                 class="mt-2"
                 v-model="reader.phone"
-                type="text"
-              ></b-form-input>
-              <b-form-input
-                class="mt-2"
-                v-model="reader.email"
                 type="text"
               ></b-form-input>
               <b-button class="mt-3" variant="primary" @click="saveChanges"
@@ -162,12 +162,20 @@
         </b-col>
       </b-row>
     </b-container>
+    <b-toast v-on:hide="state.errors = []" id="errors-toast" variant="danger">
+      <ul>
+        <li v-for="(e, index) in state.errors" :key="index">
+          {{ e }}
+        </li>
+      </ul>
+    </b-toast>
   </div>
 </template>
 
 <script>
 import MyBooks from "@/components/reader/MyBooks.vue";
 
+// note: reader is USER (admin od manager too).
 export default {
   components: {
     "my-books": MyBooks,
@@ -190,6 +198,7 @@ export default {
       state: {
         edit_opened: false,
         change_pass_opened: false,
+        errors: [],
       },
     };
   },
@@ -206,6 +215,7 @@ export default {
       })
       .then(function (response) {
         self.$store.commit("login", response.data);
+        self.setUserData();
       })
       .catch(function (error) {
         console.log(error);
@@ -215,8 +225,86 @@ export default {
     getReader(readerId) {
       console.log(readerId);
     },
-    saveChanges() {},
-    changePassword() {},
+    saveChanges() {
+      // api call PUT user or PATCH
+    },
+    setUserData() {
+      this.reader.name = this.$store.state.user.firstName;
+      this.reader.patronymic = this.$store.state.user.secondName;
+      this.reader.surname = this.$store.state.user.lastName;
+      this.reader.phone = this.$store.state.user.phone;
+    },
+    changePassword() {
+      if (!this.changePasswordFormIsValid()) {
+        this.$bvToast.show("errors-toast");
+        return;
+      }
+
+      const self = this;
+      this.$swal
+        .fire({
+          title: "Змінити пароль?",
+          showDenyButton: true,
+          confirmButtonText: `Так`,
+          denyButtonText: `Відміна`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            // api call PUT password and THEN
+            self.reader.new_password.pass = self.reader.new_password.conf_pass =
+              "";
+            self.$swal.fire("Пароль змінено", "", "success");
+          } else if (result.isDenied) {
+            self.reader.new_password.pass = self.reader.new_password.conf_pass =
+              "";
+            self.$swal.fire("Пароль не змінено", "", "info");
+          }
+        });
+    },
+    changePasswordFormIsValid() {
+      let isValid = true;
+      if (
+        this.reader.new_password.pass != this.reader.new_password.conf_pass ||
+        this.reader.new_password.conf_pass == null
+      ) {
+        this.state.errors.push("Паролі не збігаються");
+        isValid = false;
+      } else if (this.reader.new_password.conf_pass.length == 0) {
+        this.state.errors.push("Введіть пароль");
+        isValid = false;
+      } else if (this.reader.new_password.conf_pass.length < 8) {
+        this.state.errors.push(
+          "Пароль надто короткий. Пароль має містити не менш ніж 8 символів"
+        );
+        isValid = false;
+      }
+
+      return isValid;
+    },
   },
 };
 </script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap");
+.user-card-header {
+  font-family: "Philosopher", sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+.user-card-main-text {
+  font-family: "Philosopher", sans-serif;
+  font-weight: 400;
+  line-height: 1.8rem;
+}
+.notification-header {
+  font-family: "Philosopher", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-align: center;
+}
+.notification-messages {
+  font-family: "Philosopher", sans-serif;
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+</style>

@@ -75,6 +75,9 @@ const user = {
       state.firstName = null;
       state.secondName = null;
       state.lastName = null;
+
+      localStorage.removeItem("user-id");
+      localStorage.removeItem("user-token");
     },
     login(state, payload) {
       state.authorized = true;

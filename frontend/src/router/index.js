@@ -85,6 +85,17 @@ const routes = [
         path: "/profile",
         name: "UserProfile",
         component: UserProfile,
+        meta: {
+          requiresAuth: true,
+        },
+        beforeEnter: (to, from, next) => {
+          if (localStorage.getItem("user-token")) {
+            next();
+          } else {
+            next({ name: "LoginPage" });
+          }
+        },
+        children: [],
       },
       {
         path: "/",
