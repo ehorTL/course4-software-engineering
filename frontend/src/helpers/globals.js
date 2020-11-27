@@ -5,6 +5,7 @@ const globals = {
   auth: "auth",
   user_by_id: "users/",
   register_reader: "reader",
+  publication_subjects: "subjects",
 };
 
 const const_globals = Object.freeze(globals);

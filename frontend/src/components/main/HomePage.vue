@@ -1,5 +1,6 @@
 <template>
   <div>
+    <under-header></under-header>
     <b-container fluid>
       <b-row>
         <b-col cols="12" md="3">
@@ -17,31 +18,95 @@
             <b-form-checkbox v-model="state.filters.by.library_book_number"
               >Бібліотечний номер</b-form-checkbox
             >
-            <div class="clear-btn text-center" @click="clearFilters">
-              Очистити фільтри <b-icon icon="x-square"></b-icon>
+            <!-- todo set make font size smaller! -->
+            <div class="mt-3">
+              <multiselect
+                style="font-size=12px !important;"
+                v-model="query_params.subjects_selected"
+                :options="subjects"
+                :multiple="true"
+                :clear-on-select="false"
+                :preserve-search="true"
+                placeholder="Виберіть предмети"
+                label="name"
+                track-by="name"
+                :max="3"
+                :max-height="150"
+              >
+              </multiselect>
+            </div>
+
+            <div class="clear-btn text-center mt-4" @click="clearFilters">
+              Скинути фільтри <b-icon icon="x-square"></b-icon>
             </div>
           </b-card>
         </b-col>
         <b-col cols="12" md="7">
           <b-form>
-          <b-form-row>
-            <b-col md="10">
-              <b-form-input type="text"></b-form-input>
-            </b-col>
-            <b-col md="2">
-              <b-button variant="primary">Пошук</b-button>
-            </b-col>
-          </b-form-row>
-        </b-form>
+            <b-form-row>
+              <b-col cols="12" class="mt-1">
+                <b-form-input
+                  v-if="state.filters.by.name"
+                  type="text"
+                  v-model="query_params.book_name"
+                  placeholder="Назва видання"
+                ></b-form-input>
+              </b-col>
+              <b-col cols="12" v-if="state.filters.by.author" class="mt-1">
+                <b-form-input
+                  placeholder="Автор"
+                  type="text"
+                  v-model="query_params.book_author"
+                ></b-form-input>
+              </b-col>
+              <b-col cols="12" v-if="state.filters.by.isbn" class="mt-1">
+                <b-form-input
+                  placeholder="ISBN"
+                  type="text"
+                  v-model="query_params.book_isbn"
+                ></b-form-input>
+              </b-col>
+              <b-col
+                cols="12"
+                v-if="state.filters.by.library_book_number"
+                class="mt-1"
+              >
+                <b-form-input
+                  placeholder="Бібліотечний номер"
+                  type="text"
+                  v-model="query_params.library_book_number"
+                ></b-form-input>
+              </b-col>
+              <b-col md="12">
+                <b-button variant="primary" @click="search">Пошук</b-button>
+              </b-col>
+            </b-form-row>
+          </b-form>
         </b-col>
-        <b-col cols="12" md="3">fd</b-col>
+        <b-col cols="12" md="3">
+          <catalog-entry-tile
+            v-for="(ce, index) in catalog_entries"
+            :key="index"
+          ></catalog-entry-tile>
+        </b-col>
       </b-row>
     </b-container>
   </div>
 </template>
 
 <script>
+import UnderHeader from "@/components/shared/page/UnderHeader";
+import subjectMixin from "@/mixins/subject";
+import Multiselect from "vue-multiselect";
+import CatalogEntryTile from "@/components/shared/book/CatalogEntryTile";
+
 export default {
+  components: {
+    "under-header": UnderHeader,
+    Multiselect,
+    "catalog-entry-tile": CatalogEntryTile,
+  },
+  mixins: [subjectMixin],
   data() {
     return {
       state: {
@@ -58,6 +123,15 @@ export default {
           },
         },
       },
+      query_params: {
+        book_name: "",
+        book_author: "",
+        book_isbn: "",
+        library_book_number: "",
+        subjects_selected: [],
+      },
+      subjects: [],
+      catalog_entries: [1, 2, 3],
     };
   },
   methods: {
@@ -66,7 +140,22 @@ export default {
       this.state.filters.by.author = false;
       this.state.filters.by.isbn = false;
       this.state.filters.by.library_book_number = false;
+      this.query_params.subjects_selected = [];
     },
+    search() {
+      // todo axios request
+    },
+    fillPopularBooksSidebar() {
+      // request for 3 random or popular book
+      // right sidebar
+    },
+    setInitBooks() {},
+  },
+  created() {
+    const self = this;
+    this.getSubjects().then(function(response) {
+      self.subjects = response.data;
+    });
   },
 };
 </script>

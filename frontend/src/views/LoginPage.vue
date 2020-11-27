@@ -60,7 +60,12 @@
         </div>
       </div>
     </b-row>
-    <b-toast variant="danger" v-on:hide="state.errors = []" id="errors-toast">
+    <b-toast
+      variant="danger"
+      v-on:hide="state.errors = []"
+      id="errors-toast"
+      title="Сповіщення"
+    >
       <div v-for="(e, index) in state.errors" :key="index">{{ e }}</div>
     </b-toast>
   </b-container>

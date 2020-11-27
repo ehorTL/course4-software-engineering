@@ -32,6 +32,11 @@ Vue.prototype.$axios = axios;
 // components imported just in place they used!
 import "vue-search-select/dist/VueSearchSelect.css";
 
+// serchable multiselect
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
+// also multiselect was used do not need to be preconfigured here.
+
 // https://www.npmjs.com/package/vue-sweetalert2
 import VueSweeralert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
