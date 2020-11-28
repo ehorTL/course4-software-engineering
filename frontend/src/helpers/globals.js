@@ -6,6 +6,7 @@ const globals = {
   user_by_id: "users/",
   register_reader: "reader",
   publication_subjects: "subjects",
+  catalog_entries_init: "catalog_entries/popular",
 };
 
 const const_globals = Object.freeze(globals);

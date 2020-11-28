@@ -3,7 +3,7 @@
     <under-header></under-header>
     <b-container fluid>
       <b-row>
-        <b-col cols="12" md="3">
+        <b-col cols="12" md="2">
           <b-card class="shadow-sm" style="width: unset !important">
             <div>Фільтри</div>
             <b-form-checkbox v-model="state.filters.by.name"
@@ -78,17 +78,29 @@
                 ></b-form-input>
               </b-col>
               <b-col md="12">
-                <b-button variant="primary" @click="search">Пошук</b-button>
+                <div class="text-center mt-1 mb-4">
+                  <b-button
+                    variant="primary"
+                    @click="search"
+                    style="width: 200px"
+                    >Пошук</b-button
+                  >
+                </div>
               </b-col>
             </b-form-row>
           </b-form>
+          <b-row>
+            <b-col cols="12">
+              <catalog-entry-tile
+                v-for="(ce, index) in catalog_entries"
+                :key="index"
+                :catalog-entry="ce"
+                :user-role="$store.state.user.role"
+              ></catalog-entry-tile>
+            </b-col>
+          </b-row>
         </b-col>
-        <b-col cols="12" md="3">
-          <catalog-entry-tile
-            v-for="(ce, index) in catalog_entries"
-            :key="index"
-          ></catalog-entry-tile>
-        </b-col>
+        <b-col cols="12" md="3"> ddffd </b-col>
       </b-row>
     </b-container>
   </div>
@@ -131,7 +143,7 @@ export default {
         subjects_selected: [],
       },
       subjects: [],
-      catalog_entries: [1, 2, 3],
+      catalog_entries: [],
     };
   },
   methods: {
@@ -149,13 +161,30 @@ export default {
       // request for 3 random or popular book
       // right sidebar
     },
-    setInitBooks() {},
+    setInitBooks() {
+      const url =
+        this.$globals.remlib_api_host + this.$globals.catalog_entries_init;
+      const self = this;
+
+      this.$axios
+        .get(url)
+        .then(function (response) {
+          self.catalog_entries = response.data.map((ce) => {
+            return ce;
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
   },
   created() {
     const self = this;
-    this.getSubjects().then(function(response) {
+    this.getSubjects().then(function (response) {
       self.subjects = response.data;
     });
+
+    this.setInitBooks();
   },
 };
 </script>

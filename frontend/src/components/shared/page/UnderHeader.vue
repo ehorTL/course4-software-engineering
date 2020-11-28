@@ -1,7 +1,9 @@
 <template>
   <div>
     <b-container fluid>
-      <b-row> here can be your commercial </b-row>
+      <b-row>
+        <b-col col>here can be your commercial</b-col>
+      </b-row>
     </b-container>
   </div>
 </template>
