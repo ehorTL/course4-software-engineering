@@ -3,8 +3,11 @@
     <under-header></under-header>
     <b-container fluid>
       <b-row>
-        <b-col cols="12" md="2">
-          <b-card class="shadow-sm" style="width: unset !important">
+        <b-col cols="12" md="3">
+          <b-card
+            class="shadow-sm"
+            style="width: unset !important; word-wrap: anywhere"
+          >
             <div>Фільтри</div>
             <b-form-checkbox v-model="state.filters.by.name"
               >Назва</b-form-checkbox
@@ -92,6 +95,7 @@
           <b-row>
             <b-col cols="12">
               <catalog-entry-tile
+                class="mt-2"
                 v-for="(ce, index) in catalog_entries"
                 :key="index"
                 :catalog-entry="ce"
@@ -100,7 +104,15 @@
             </b-col>
           </b-row>
         </b-col>
-        <b-col cols="12" md="3"> ddffd </b-col>
+        <b-col cols="12" md="2">
+          <publ-tile
+            class="mt-3 publ-tile"
+            v-for="(p, index) in popular_publications"
+            :key="index"
+            :publication-property="p"
+            @click="searchCatalogEntriesByPublication(p)"
+          ></publ-tile>
+        </b-col>
       </b-row>
     </b-container>
   </div>
@@ -111,12 +123,14 @@ import UnderHeader from "@/components/shared/page/UnderHeader";
 import subjectMixin from "@/mixins/subject";
 import Multiselect from "vue-multiselect";
 import CatalogEntryTile from "@/components/shared/book/CatalogEntryTile";
+import PublicationSmallTile from "@/components/shared/book/PublicationSmallTile";
 
 export default {
   components: {
     "under-header": UnderHeader,
     Multiselect,
     "catalog-entry-tile": CatalogEntryTile,
+    "publ-tile": PublicationSmallTile,
   },
   mixins: [subjectMixin],
   data() {
@@ -144,6 +158,7 @@ export default {
       },
       subjects: [],
       catalog_entries: [],
+      popular_publications: [], // can be just random publications
     };
   },
   methods: {
@@ -158,8 +173,21 @@ export default {
       // todo axios request
     },
     fillPopularBooksSidebar() {
-      // request for 3 random or popular book
       // right sidebar
+      const url =
+        this.$globals.remlib_api_host + this.$globals.popular_publications;
+      const self = this;
+      this.$axios
+        .get(url)
+        .then(function (response) {
+          // todo map??
+          self.popular_publications = response.data.map((p) => {
+            return p;
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     setInitBooks() {
       const url =
@@ -177,6 +205,23 @@ export default {
           console.log(error);
         });
     },
+    searchCatalogEntriesByPublication(publication) {
+      // console.log(publication);
+      const url =
+        this.$globals.remlib_api_host +
+        this.$globals.get_ce_by_pid +
+        publication.identifier;
+
+      const self = this;
+      this.$axios
+        .get(url)
+        .then(function (response) {
+          self.catalog_entries = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
   },
   created() {
     const self = this;
@@ -185,6 +230,7 @@ export default {
     });
 
     this.setInitBooks();
+    this.fillPopularBooksSidebar();
   },
 };
 </script>
@@ -208,6 +254,9 @@ export default {
   text-decoration: underline;
 }
 .clear-btn:hover {
+  cursor: pointer;
+}
+.publ-tile:hover {
   cursor: pointer;
 }
 </style>

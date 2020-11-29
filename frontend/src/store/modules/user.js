@@ -78,6 +78,7 @@ const user = {
 
       localStorage.removeItem("user-id");
       localStorage.removeItem("user-token");
+      localStorage.rmeoveItem("user-role");
     },
     login(state, payload) {
       state.authorized = true;
@@ -92,6 +93,7 @@ const user = {
       state.email = payload.email;
 
       localStorage.setItem("user-id", payload.email);
+      localStorage.setItem("user-role", payload.role.role);
     },
     saveToken(state, payload) {
       state.auth_token = payload.token;

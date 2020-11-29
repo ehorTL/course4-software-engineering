@@ -3,8 +3,14 @@
     <b-container>
       <b-row>
         <b-col cols="12" md="3">
-          <!-- book photo or stub like no photo here -->
-          photo here
+          <div class="book-tile-img text-center">
+            <b-img
+              fluid
+              :src="defaults.img_path"
+              class="rounded"
+              alt=""
+            ></b-img>
+          </div>
         </b-col>
         <b-col cols="12" md="9">
           <h4>
@@ -30,6 +36,9 @@ export default {
     return {
       catalog_entry: this.catalogEntry,
       user_role: this.userRole,
+      defaults: {
+        img_path: "/img/avatar-no-photo.png",
+      },
     };
   },
   methods: {},
@@ -40,5 +49,11 @@ export default {
 <style scoped>
 * {
   word-wrap: anywhere;
+}
+.book-tile-img {
+  max-width: 300px;
+}
+.book-tile-img:hover {
+  cursor: pointer;
 }
 </style>

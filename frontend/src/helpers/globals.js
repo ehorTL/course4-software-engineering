@@ -7,6 +7,14 @@ const globals = {
   register_reader: "reader",
   publication_subjects: "subjects",
   catalog_entries_init: "catalog_entries/popular",
+  popular_publications: "publications/popular",
+  get_ce_by_pid: "catalog_entry_by_publication/",
+
+  assets: {
+    avatars: {
+      no_photo: "/img/avatar-no-photo.png",
+    },
+  },
 };
 
 const const_globals = Object.freeze(globals);
