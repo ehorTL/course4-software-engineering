@@ -11,7 +11,7 @@
       <template #cell(actions)="row">
         <b-button
           size="sm"
-          @click="deleteManager(row.index, row.item.id)"
+          @click="deleteManager(row.index, row.item.email)"
           class="mr-2"
           v-b-popover.hover.top="'Натисніть щоб видалити менеджера'"
         >
@@ -32,36 +32,52 @@
       </template>
 
       <template #row-details="row">
-        <div>
-          <input type="text" v-model="row.item.name" />
-          <input type="text" v-model="row.item.patronymic" />
-          <input type="text" v-model="row.item.surname" />
-          <date-picker
-            :confirm="true"
-            confirm-text="Ок"
-            v-model="row.item.birthday"
-            valueType="format"
-          ></date-picker>
-          <b-form-input
-            type="tel"
-            v-model="row.item.phone"
-            placeholder="телефон"
-          ></b-form-input>
-          <input type="text" v-model="row.item.email" />
-          <b-form-input
-            v-if="row.item.password != undefined"
-            type="password"
-            v-model="row.item.password"
-          ></b-form-input>
-          <b-form-input
-            v-if="row.item.password_confirmation != undefined"
-            type="password"
-            v-model="row.item.phone.password_confirmation"
-          ></b-form-input>
-          <b-button variant="danger">{{
-            row.item.newly_created ? "Створити" : "Зберегти"
-          }}</b-button>
-        </div>
+        <b-container fluid>
+          <b-row>
+            <b-col cols="12" md="6">
+              <b-form-input type="text" v-model="row.item.name"> </b-form-input>
+              <b-form-input type="text" v-model="row.item.patronymic" />
+              <b-form-input type="text" v-model="row.item.surname" />
+            </b-col>
+            <b-col cols="12" md="6">
+              <date-picker
+                :confirm="true"
+                confirm-text="Ок"
+                v-model="row.item.birthday"
+                valueType="format"
+              ></date-picker>
+              <b-form-input
+                type="tel"
+                v-model="row.item.phone"
+                placeholder="Телефон"
+              ></b-form-input>
+              <b-form-input type="text" v-model="row.item.email" />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-form-input
+                v-if="row.item.password != undefined"
+                type="password"
+                v-model="row.item.password"
+                placeholder="Введіть пароль"
+              ></b-form-input>
+              <b-form-input
+                v-if="row.item.password_confirmation != undefined"
+                type="password"
+                v-model="row.item.phone.password_confirmation"
+                placeholder="Повторіть пароль"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="4">
+              <b-button variant="danger" class="mt-2">{{
+                row.item.newly_created ? "Створити" : "Зберегти"
+              }}</b-button>
+            </b-col>
+          </b-row>
+        </b-container>
       </template>
     </b-table>
   </div>
@@ -76,33 +92,10 @@ export default {
   components: { "date-picker": DatePicker },
   created() {
     this.getManagers();
-    this.managers = [
-      {
-        id: 1,
-        name: "Vasya",
-        patronymic: "Vasilievich",
-        surname: "Pupkin",
-        email: "vasya@test.test",
-        role: "manager",
-        detailsShowing: false,
-        phone: "",
-      },
-      {
-        id: 2,
-        name: "Petya",
-        patronymic: "Vasilievich",
-        surname: "Petrov",
-        email: "petya@test.test",
-        role: "manager",
-        detailsShowing: false,
-        phone: "",
-      },
-    ];
   },
   data() {
     return {
       header_fields: [
-        "id",
         "name",
         "patronymic",
         "surname",
@@ -113,14 +106,13 @@ export default {
     };
   },
   methods: {
-    deleteManager(index, id) {
+    deleteManager(index, email) {
       // if (axios.....) deleted then remove from the list or fetch all again
       this.managers.splice(index, 1);
-      alert("deleted, ID: " + id);
+      console.log(email + " " + "deleted");
     },
     addManager() {
       this.managers.unshift({
-        id: "?",
         name: "Імя",
         patronymic: "По-батькові",
         surname: "Прізвище",
@@ -139,7 +131,21 @@ export default {
       // ask for confirmation
     },
     getManagers() {
-      // todo axios....
+      const url = this.$globals.remlib_api_host + this.$globals.managers;
+      const self = this;
+      this.$axios
+        .get(url)
+        .then(function (response) {
+          self.managers = response.data.map((mgr) => {
+            return {
+              ...mgr,
+              detailsShowing: false,
+            };
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
   },
 };
