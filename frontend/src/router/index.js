@@ -16,6 +16,7 @@ import AboutLibrary from "@/components/shared/section/AboutLibrary";
 import Book from "@/components/shared/book/Book";
 import ReaderBook from "@/components/shared/book/ReaderBook";
 import MyBooks from "@/components/reader/MyBooks.vue";
+import ReaderCatalogEntry from "@/components/shared/book/ReaderCatalogEntry";
 
 Vue.use(VueRouter);
 
@@ -30,6 +31,12 @@ const routes = [
         name: "Error",
         component: Error,
         children: [],
+      },
+      {
+        path: "/catalog-entry/:id",
+        name: "ReaderCatalogEntry",
+        component: ReaderCatalogEntry,
+        props: true,
       },
       {
         path: "/reader/my-books",
@@ -59,7 +66,7 @@ const routes = [
         component: Reports,
       },
       {
-        path: "/manager/system-configs",
+        path: "/admin/system-configs",
         name: "system-configs",
         component: SystemConfigs,
       },

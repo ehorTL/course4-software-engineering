@@ -100,6 +100,7 @@
                 :key="index"
                 :catalog-entry="ce"
                 :user-role="$store.state.user.role"
+                @click="openCatalogEntry(ce)"
               ></catalog-entry-tile>
             </b-col>
           </b-row>
@@ -171,6 +172,12 @@ export default {
     },
     search() {
       // todo axios request
+    },
+    openCatalogEntry(catalogEntry) {
+      this.$router.push({
+        name: "ReaderCatalogEntry",
+        params: { id: catalogEntry.id },
+      });
     },
     fillPopularBooksSidebar() {
       // right sidebar

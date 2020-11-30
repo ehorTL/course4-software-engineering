@@ -72,9 +72,14 @@
           </b-row>
           <b-row>
             <b-col cols="4">
-              <b-button variant="danger" class="mt-2">{{
-                row.item.newly_created ? "Створити" : "Зберегти"
-              }}</b-button>
+              <b-button
+                variant="danger"
+                class="mt-2"
+                @click="saveManager(row.item)"
+                >{{
+                  row.item.newly_created ? "Створити" : "Зберегти"
+                }}</b-button
+              >
             </b-col>
           </b-row>
         </b-container>
@@ -125,10 +130,42 @@ export default {
         password_confirmation: "",
       });
     },
-    saveManager() {
-      // todo axios...
-      // update id
+    createManager(manager) {
+      const url = this.$globals.remlib_api_host + this.$globals.add_manager;
+      return this.$axios.post(url, manager);
+    },
+    updateManager(manager) {
+      const url =
+        this.$globals.remlib_api_host +
+        this.$globals.add_manager +
+        "/" +
+        manager.email;
+      return this.$axios.put(url, manager);
+    },
+    saveManager(manager) {
       // ask for confirmation
+      let mgr = {
+        email: manager.email,
+        name: manager.name,
+        surname: manager.surname,
+        patronymic: manager.patronymic,
+        birthday: manager.birthday,
+        phone: manager.phone,
+        role: {
+          id: "2",
+          name: "manager",
+        },
+        fee: 0,
+        password: manager.password,
+        password_confirmation: manager.password_confirmation,
+      };
+
+      // wrap in promise, handle response todo
+      if (manager.newly_created) {
+        this.createManager(mgr);
+      } else {
+        this.updateManager(mgr);
+      }
     },
     getManagers() {
       const url = this.$globals.remlib_api_host + this.$globals.managers;

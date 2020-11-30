@@ -9,7 +9,9 @@ const globals = {
   catalog_entries_init: "catalog_entries/popular",
   popular_publications: "publications/popular",
   get_ce_by_pid: "catalog_entry_by_publication/",
+  get_ce_by_id: "catalog_entry/",
   managers: "managers/",
+  add_manager: "user",
 
   assets: {
     avatars: {

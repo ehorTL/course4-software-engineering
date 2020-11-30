@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @click="$emit('click', $event)">
     <b-container>
       <b-row>
         <b-col cols="12" md="3">
