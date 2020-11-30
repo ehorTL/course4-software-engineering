@@ -4,7 +4,6 @@ import Main from "../views/Main";
 import LoginPage from "../views/LoginPage";
 import UserProfile from "../views/user/UserProfile.vue";
 import Admin from "../views/Admin";
-import Manager from "../views/Manager";
 import Error from "../views/Error";
 import Readers from "../views/Readers";
 import ReaderInfo from "@/components/reader/ReaderInfo";
@@ -30,6 +29,13 @@ const routes = [
         path: "/error",
         name: "Error",
         component: Error,
+        children: [],
+      },
+      {
+        path: "/manager/readers/:id",
+        name: "ReaderInfo",
+        component: ReaderInfo,
+        props: true,
         children: [],
       },
       {
@@ -111,19 +117,6 @@ const routes = [
         children: [],
       },
     ],
-  },
-  {
-    path: "/manager",
-    name: "Manager",
-    component: Manager,
-    children: [],
-  },
-  {
-    path: "/manager/readers/:id",
-    name: "ReaderInfo",
-    component: ReaderInfo,
-    props: true,
-    children: [],
   },
   {
     path: "/login",

@@ -4,7 +4,7 @@
       <template #cell(show_details)="row">
         <b-button
           size="sm"
-          @click="readMore(row.item.id)"
+          @click="readMore(row.item.email)"
           class="mr-2"
           v-b-popover.hover.top="
             'Натисніть щоб переглнути інформацію про читача'
@@ -27,7 +27,6 @@ export default {
   data() {
     return {
       header_fields: [
-        "id",
         "name",
         "patronymic",
         "surname",
@@ -41,30 +40,18 @@ export default {
   methods: {
     getReaders(page, quanityPerPage) {
       console.log(page, quanityPerPage);
-      this.readers = [
-        {
-          id: 2,
-          name: "Petya",
-          patronymic: "Vasilievich",
-          surname: "Petrov",
-          email: "petya@test.test",
-          role: "manager",
-          detailsShowing: false,
-          phone: "",
-          fee: 0,
-          active: true,
-        },
-      ];
     },
-    getReadersAll(){
-      let self = this;
-      this.$axios.get('https://yehor.free.beeceptor.com/readers')
-      .then(response => {
-        console.log(response);
-        self.readers = self.mapReaders(response.data);
-      }).catch( error => {
-        console.log(error)
-      });
+    getReadersAll() {
+      const self = this;
+      const url = this.$globals.remlib_api_host + this.$globals.get_readers;
+      this.$axios
+        .get(url)
+        .then((response) => {
+          self.readers = self.mapReaders(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     deactivateReader(index, id) {
       console.log(index, id);
@@ -75,21 +62,21 @@ export default {
 
       this.$router.push({ name: "ReaderInfo", params: { id: readerId } });
     },
-    mapReaders(readersResponse){
-    return readersResponse.map(reader => {
-          return {
-          id: 'default',
+    mapReaders(readersResponse) {
+      return readersResponse.map((reader) => {
+        return {
           name: reader.name,
           patronymic: reader.patronymic,
           surname: reader.surname,
           email: reader.email,
           role: reader.role.role,
+          phone: reader.phone,
           detailsShowing: false,
-          phone: "",
           fee: 0,
-          active: true,};
-    });
-  },
+          active: true,
+        };
+      });
+    },
   },
   created() {
     this.getReadersAll();

@@ -12,6 +12,8 @@ const globals = {
   get_ce_by_id: "catalog_entry/",
   managers: "managers/",
   add_manager: "user",
+  get_reader: "user/",
+  get_readers: "readers",
 
   assets: {
     avatars: {

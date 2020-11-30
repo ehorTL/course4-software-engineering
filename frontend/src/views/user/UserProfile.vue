@@ -284,7 +284,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap");
 .user-card-header {
   font-family: "Philosopher", sans-serif;
