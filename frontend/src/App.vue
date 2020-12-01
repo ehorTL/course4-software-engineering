@@ -14,5 +14,6 @@ export default {
 
 <style lang="scss">
 #app {
+  background-color: #f0f2f5;
 }
 </style>

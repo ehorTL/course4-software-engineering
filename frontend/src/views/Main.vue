@@ -23,9 +23,6 @@ export default {
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Comfortaa&display=swap");
-* {
-  background-color: #f0f2f5;
-}
 .footer-style {
   min-height: 10vh;
   background-color: #f0f2f5;

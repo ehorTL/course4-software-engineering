@@ -22,6 +22,15 @@
                   :disabled="!isActive"
                 ></b-form-select>
               </b-col>
+              <b-col>
+                <b-button
+                  variant="primary"
+                  size="sm"
+                  pill
+                  @click="saveNotificationsChanges"
+                  >Підтвердити зміни</b-button
+                >
+              </b-col>
             </b-row>
           </div>
         </b-col>
@@ -59,11 +68,17 @@ export default {
   },
   methods: {
     changeSystemConfigs() {},
+    saveNotificationsChanges() {
+      //todo request
+    },
   },
 };
 </script>
 
 <style scoped>
+* {
+  background-color: #f0f2f5;
+}
 .main-font {
   font-family: "Comfortaa", cursive;
   font-size: 16px !important;
