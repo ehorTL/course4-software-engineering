@@ -85,6 +85,14 @@ export default {
       this.$router.push({ name: "LoginPage" });
     },
   },
+  created() {
+    const self = this;
+    // todo fix user data client storage persistense in another way
+    setInterval(function () {
+      self.$store.dispatch("updateCreds");
+      console.log("callback header");
+    }, 5000);
+  },
 };
 </script>
 

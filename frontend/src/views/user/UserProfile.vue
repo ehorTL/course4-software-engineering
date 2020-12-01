@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-6">
+    <b-container fluid>
+      <b-row>
+        <b-col cols="12" md="6" class="mt-2">
           <b-card>
             <div class="text-center user-card-header">Картка користувача</div>
             <div class="user-card-main-text">
@@ -44,8 +44,8 @@
               ></a>
             </div>
           </b-card>
-        </div>
-        <div class="col-6">
+        </b-col>
+        <b-col cols="12" md="6" class="mt-2">
           <b-card>
             <div class="notification-header">Нагадування</div>
             <div
@@ -152,9 +152,9 @@
               </div>
             </template>
           </b-card>
-        </div>
-      </div>
-    </div>
+        </b-col>
+      </b-row>
+    </b-container>
     <b-container fluid v-if="$store.state.user.role == 'reader'">
       <b-row>
         <b-col>
@@ -174,9 +174,11 @@
 
 <script>
 import MyBooks from "@/components/reader/MyBooks.vue";
+import loanCardMixin from "@/mixins/loan_card.js";
 
 // note: reader is USER (admin od manager too).
 export default {
+  mixins: [loanCardMixin],
   components: {
     "my-books": MyBooks,
   },

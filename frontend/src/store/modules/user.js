@@ -48,11 +48,14 @@ const user = {
     },
     logout({ commit }) {
       commit("logout");
-      // query to auth api
+      // request to auth api
     },
     getUser(context, payload) {
       let url = globals.remlib_api_host + globals.user_by_id + payload.email;
       return axios.get(url, payload);
+    },
+    updateCreds(context) {
+      context.state.role = localStorage.getItem("user-role");
     },
   },
   mutations: {
