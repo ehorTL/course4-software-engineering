@@ -21,7 +21,12 @@
               <div>Tel: {{ $store.state.user.phone }}</div>
               <div>Email: {{ $store.state.user.email }}</div>
               <div v-if="$store.state.user.role == 'reader'">
-                Книжок на руках: {{ reader.books_on_hands }}
+                <div v-if="reader_loan_cards">
+                  <div>Книжок на руках: {{ on_hands }}</div>
+                  <div>Книжок в черзі: {{ queued }}</div>
+                  <div>Книжок заброньовано (не забрані): {{ requested }}</div>
+                  <div>Книжок в здано: {{ checked_in }}</div>
+                </div>
               </div>
             </div>
             <div class="text-center">
@@ -202,9 +207,37 @@ export default {
         change_pass_opened: false,
         errors: [],
       },
+      reader_loan_cards: [],
+
+      on_hands: 0, //checked out
+      requested: 0,
+      queued: 0,
+      checked_in: 0,
     };
   },
-  beforeCreate() {},
+  watch: {
+    reader_loan_cards: function (newLcs, oldLcs) {
+      if (this.reader_loan_cards === undefined) {
+        return;
+      }
+      const self = this;
+      this.on_hands = newLcs.filter((lc) => {
+        return self.ce_is_checked_out(lc);
+      }).length;
+
+      this.requested = newLcs.filter((lc) => {
+        return self.ce_is_requested(lc);
+      }).length;
+
+      this.checked_in = newLcs.filter((lc) => {
+        return self.ce_is_checked_in(lc);
+      }).length;
+
+      this.queued = newLcs.filter((lc) => {
+        return self.ce_is_on_queueloanCard(lc);
+      }).length;
+    },
+  },
   created() {
     // getuser and save to store
     let userId = this.$store.getters.savedUserId;
@@ -222,6 +255,16 @@ export default {
       .catch(function (error) {
         console.log(error);
       });
+
+    if (this.$store.getters.userRole == "reader") {
+      this.getReaderLoanCards({ email: this.$store.getters.savedUserId })
+        .then((response) => {
+          self.reader_loan_cards = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   },
   methods: {
     getReader(readerId) {

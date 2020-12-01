@@ -11,6 +11,18 @@ export default {
     };
   },
   methods: {
+    ce_is_checked_in(loanCard) {
+      return loanCard.loan_status.status.toLowerCase() == "checked in";
+    },
+    ce_is_checked_out(loanCard) {
+      return loanCard.loan_status.status.toLowerCase() == "checked out";
+    },
+    ce_is_requested(loanCard) {
+      return loanCard.loan_status.status.toLowerCase() == "requested";
+    },
+    ce_is_on_queueloanCard(loanCard) {
+      return loanCard.loan_status.status.toLowerCase() == "queue";
+    },
     loan_statuses_en2ua(statuses) {
       const self = this;
       return statuses.map((s) => {
@@ -31,7 +43,6 @@ export default {
       } else return status;
     },
     loan_card_transform(responseLoanCard) {
-      console.info("INFO INFO INFO INFO ");
       responseLoanCard.loan_status = this.loan_card_status_en2ua(
         responseLoanCard.loan_status
       );
