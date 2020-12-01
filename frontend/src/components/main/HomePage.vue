@@ -100,7 +100,6 @@
                 :key="index"
                 :catalog-entry="ce"
                 :user-role="$store.state.user.role"
-                @click="openCatalogEntry(ce)"
               ></catalog-entry-tile>
             </b-col>
           </b-row>

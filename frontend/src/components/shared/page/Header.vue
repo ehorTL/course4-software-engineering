@@ -32,6 +32,12 @@
             >Звіти</b-nav-item
           >
           <b-nav-item
+            v-if="$store.state.user.role === 'manager'"
+            exact-active-class="active"
+            :to="{ name: 'ManagerSystemConfigs' }"
+            >Системні налаштування</b-nav-item
+          >
+          <b-nav-item
             v-if="$store.state.user.role === 'admin'"
             exact-active-class="active"
             :to="{ name: 'Admin' }"
@@ -58,7 +64,8 @@
                 <router-link :to="{ name: 'UserProfile' }">Профіль</router-link>
               </b-dropdown-item>
               <b-dropdown-item href="#" @click="logout">
-                <a href="javascript:void(0)">Вийти</a></b-dropdown-item>
+                <a href="javascript:void(0)">Вийти</a></b-dropdown-item
+              >
             </div>
           </b-nav-item-dropdown>
         </b-navbar-nav>
@@ -70,14 +77,14 @@
 <script>
 export default {
   methods: {
-    logout(){
-      this.$store.dispatch('logout');
+    logout() {
+      this.$store.dispatch("logout");
       this.goToLoginPage();
     },
     goToLoginPage() {
       this.$router.push({ name: "LoginPage" });
     },
-  }
+  },
 };
 </script>
 

@@ -12,8 +12,8 @@ export default {
   },
   methods: {
     downloadReport() {
-      console.log("downloading...");
-      const url = this.$globals.remlib_api_host + "reports/1";
+      let id = 1;
+      const url = this.$globals.remlib_api_host + this.$globals.reports + id;
       const method = "GET";
 
       this.$axios
@@ -34,6 +34,20 @@ export default {
           link.remove();
         })
         .catch(function (error) {
+          console.log(error);
+        });
+    },
+    generateReport() {
+      const url = this.$globals.remlib_api_host + this.$globals.reports;
+      const self = this;
+      let params = {};
+
+      this.axios
+        .post(url, params)
+        .then((response) => {
+          self.$swal.fire("Очікуйте", "Звіт генерується", "seccess");
+        })
+        .catch((error) => {
           console.log(error);
         });
     },

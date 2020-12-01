@@ -105,7 +105,7 @@ export default {
         return;
       }
 
-      let self = this;
+      const self = this;
       this.$store
         .dispatch("login", {
           email: this.email,
@@ -115,7 +115,12 @@ export default {
           self.goToMain();
         })
         .catch(() => {
-          console.log("Error in readers data fetching");
+          // console.log("Error in readers data fetching");
+          self.$swal.fire(
+            "Вибачте",
+            "Виникла проблема з підключенням",
+            "error"
+          );
         });
     },
     formIsValid() {

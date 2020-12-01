@@ -14,6 +14,8 @@ const globals = {
   add_manager: "user",
   get_reader: "user/",
   get_readers: "readers",
+  reports: "reports/",
+  stub_ebook: "http://localhost:3000/remlib.com/api/ebook",
 
   assets: {
     avatars: {

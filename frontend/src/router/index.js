@@ -9,6 +9,7 @@ import Readers from "../views/Readers";
 import ReaderInfo from "@/components/reader/ReaderInfo";
 import HomePageComponent from "@/components/main/HomePage";
 import SystemConfigs from "../views/SystemConfigs";
+import ManagerSystemConfigs from "../views/ManagerSystemConfigs";
 import ManagerBooks from "@/components/shared/book/ManagerBooks";
 import Reports from "@/components/manager/Reports";
 import AboutLibrary from "@/components/shared/section/AboutLibrary";
@@ -36,6 +37,12 @@ const routes = [
         name: "ReaderInfo",
         component: ReaderInfo,
         props: true,
+        children: [],
+      },
+      {
+        path: "/manager/system-configs",
+        name: "ManagerSystemConfigs",
+        component: ManagerSystemConfigs,
         children: [],
       },
       {
@@ -147,16 +154,16 @@ const router = new VueRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  if (to.path.startsWith("/manager")) {
-    if (localStorage.getItem("user-role") == "manager") {
-      next();
-    } else next({ name: "LoginPage" });
-  } else if (to.path.startsWith("/admin")) {
-    if (localStorage.getItem("user-role") == "admin") {
-      next();
-    } else next({ name: "LoginPage" });
-  } else next();
-});
+// router.beforeEach((to, from, next) => {
+//   if (to.path.startsWith("/manager")) {
+//     if (localStorage.getItem("user-role") == "manager") {
+//       next();
+//     } else next({ name: "LoginPage" });
+//   } else if (to.path.startsWith("/admin")) {
+//     if (localStorage.getItem("user-role") == "admin") {
+//       next();
+//     } else next({ name: "LoginPage" });
+//   } else next();
+// });
 
 export default router;

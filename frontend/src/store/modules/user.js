@@ -78,7 +78,7 @@ const user = {
 
       localStorage.removeItem("user-id");
       localStorage.removeItem("user-token");
-      localStorage.rmeoveItem("user-role");
+      localStorage.removeItem("user-role");
     },
     login(state, payload) {
       state.authorized = true;

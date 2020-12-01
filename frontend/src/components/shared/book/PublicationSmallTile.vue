@@ -1,7 +1,16 @@
 <template>
   <div @click="$emit('click', $event)">
     <div class="book-tile-img">
-      <b-img fluid :src="defaults.no_photo" class="rounded" alt=""></b-img>
+      <b-img
+        fluid
+        :src="
+          publication.descripiton.photo.trim().length != 0
+            ? publication.descripiton.photo
+            : defaults.no_photo
+        "
+        class="rounded"
+        alt=""
+      ></b-img>
     </div>
     <div>
       {{ publicationProperty.title }}
@@ -13,14 +22,12 @@
 </template>
 
 <script>
-import { const_globals as globals } from "@/helpers/globals";
-
 export default {
   props: ["publicationProperty"],
   data() {
     return {
       defaults: {
-        no_photo: globals.assets.avatars.no_photo,
+        no_photo: this.$globals.assets.avatars.no_photo,
       },
       publication: this.publicationProperty,
     };
