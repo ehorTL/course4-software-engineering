@@ -16,6 +16,7 @@ const globals = {
   get_readers: "readers",
   reports: "reports/",
   stub_ebook: "http://localhost:3000/remlib.com/api/ebook",
+  get_loan_cards_by_user_id: "loan_cards/user/",
 
   assets: {
     avatars: {

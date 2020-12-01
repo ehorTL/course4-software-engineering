@@ -8,7 +8,17 @@
         :fields="header_fields"
         :items="loan_cards"
         responsive=""
-      ></b-table>
+      >
+        <template #cell(catalog_entry.publication.title)="data">
+          <router-link
+            :to="{
+              name: 'ReaderCatalogEntry',
+              params: { id: loan_cards[data.index].catalog_entry.id },
+            }"
+            >{{ data.value }}</router-link
+          >
+        </template>
+      </b-table>
     </b-container>
   </div>
 </template>
@@ -31,70 +41,24 @@ export default {
     };
   },
   created() {
-    this.loan_cards = [
-      {
-        id: "",
-        // user
-        catalog_entry: {
-          id: 1,
-          publication: {
-            identifier: "isbn1231",
-            title:
-              "bookbookbookbookbookbookbookbookbookbookbookbookbookbook title longlong long longlong longmn longvery",
-            subject: {
-              id: 1,
-              name: "Physics",
-            },
-            descripiton: {
-              // todo description??
-              text: "",
-              photo: "",
-            },
-            creator: "",
-            source: "",
-            publisher: "",
-            publication_date: "",
-            contributor: "",
-            rights: "",
-            format: "",
-            language: "",
-            type: {
-              id: 1,
-              type: "книга",
-            },
-            edition: "видання",
-          },
-          library: {
-            id: 1,
-            name: "",
-            address: "",
-          },
-          item_number: "шев123",
-          status: {
-            id: "",
-            status: "",
-          },
-          available_from: "",
-          copies_number: "",
-          copies_available: "",
-          loan_days: "",
-        },
-        loan_status: {
-          id: 1,
-          status: "requested",
-        },
-        //
-        checked_in_date: "",
-        loan_until: "",
-        available_from: "",
-        notes: "",
-      },
-    ];
-
-    const self = this;
-    this.loan_cards = this.loan_cards.map((lc) => self.loan_card_transform(lc));
+    this.getReaderRelatedLoanCards();
   },
-  methods: {},
+  methods: {
+    getReaderRelatedLoanCards() {
+      const self = this;
+      const readerId = this.$store.getters.savedUserId;
+      this.getReaderLoanCards({ email: readerId })
+        .then((response) => {
+          self.loan_cards = response.data;
+          self.loan_cards = self.loan_cards.map((lc) =>
+            self.loan_card_transform(lc)
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+  },
 };
 </script>
 

@@ -34,6 +34,35 @@
           </b-col>
         </b-row>
       </b-container>
+      <template #footer>
+        <b-container fluid>
+          <b-row style="background-color: transparent">
+            <b-col cols="4" md="8">
+              <div>
+                {{
+                  catalog_entry.copies_available == 0
+                    ? "Недоступна"
+                    : "У наявності"
+                }}
+              </div>
+              <div v-if="$store.getters.userRole == 'reader'">
+                <b-link
+                  v-if="catalog_entry.copies_available == 0"
+                  @click="bookCatalogEntry"
+                >
+                  Забронювати
+                </b-link>
+                <b-link v-else @click="takeCatalogEntry"> Взяти книгу </b-link>
+              </div>
+            </b-col>
+            <b-col cols="4" md="4" style="background-color: transparent">
+              <b-button variant="primary" @click="openCatalogEntry" size="sm"
+                >Дізнатися більше</b-button
+              >
+            </b-col>
+          </b-row>
+        </b-container>
+      </template>
     </b-card>
   </div>
 </template>
@@ -52,6 +81,14 @@ export default {
     };
   },
   methods: {
+    bookCatalogEntry() {},
+    takeCatalogEntry() {},
+    openCatalogEntry() {
+      this.$router.push({
+        name: "ReaderCatalogEntry",
+        params: { id: this.catalog_entry.id },
+      });
+    },
     downloadDigitalVersion() {
       const url = this.digital_version_link;
       const method = "GET";

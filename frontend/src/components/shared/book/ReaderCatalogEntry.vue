@@ -1,8 +1,12 @@
 <template>
   <div>
-    <div v-if="catalog_entry">
-      {{ catalog_entry.publication.title }}
-    </div>
+    <b-container fluid>
+      <b-row>
+        <b-col>
+          {{ catalog_entry.publication.title }}
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 

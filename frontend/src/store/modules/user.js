@@ -131,6 +131,15 @@ const user = {
 
       return "";
     },
+    userRole: (state) => {
+      if (state.role != null && state.role != undefined && state.role != "") {
+        return localStorage.getItem("user-role");
+      } else if (localStorage.getItem("user-role") !== undefined) {
+        return localStorage.getItem("user-role");
+      }
+
+      return "";
+    },
   },
 };
 

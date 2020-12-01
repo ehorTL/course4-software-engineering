@@ -172,12 +172,6 @@ export default {
     search() {
       // todo axios request
     },
-    openCatalogEntry(catalogEntry) {
-      this.$router.push({
-        name: "ReaderCatalogEntry",
-        params: { id: catalogEntry.id },
-      });
-    },
     fillPopularBooksSidebar() {
       // right sidebar
       const url =
