@@ -24,28 +24,42 @@
       <b-col cols="12" md="9" lg="10">
         <b-form>
           <b-form-row>
-            <b-col md="10">
+            <b-col md="10" class="mt-2">
               <b-form-input type="text"></b-form-input>
             </b-col>
-            <b-col md="2">
-              <b-button>Пошук</b-button>
+            <b-col md="2" class="mt-1">
+              <b-button size="sm">Пошук</b-button>
             </b-col>
           </b-form-row>
         </b-form>
         <div class="mt-5">
-          <b-button @click="addPublication" variant="primary"
+          <b-button @click="addPublication" variant="primary" size="sm"
             >Додати публікацію</b-button
           >
-          <b-table striped hover :items="books" :fields="fields" responsive>
+          <b-table
+            striped
+            hover
+            :items="publications"
+            :fields="fields"
+            responsive
+          >
             <template #cell(show_details)="row">
               <b-button
                 size="sm"
                 @click="row.toggleDetails"
                 class="mr-2"
-                v-b-popover.hover.top="
-                  'Інформація про публікацію'
-                "
+                v-b-popover.hover.top="'Інформація про публікацію'"
                 >Детальніше
+              </b-button>
+            </template>
+            <template #cell(remove_publication)="row">
+              <b-button
+                size="sm"
+                class="mr-2"
+                variant="danger"
+                @click="deletePublication(row.index)"
+              >
+                <b-icon icon="trash"></b-icon>
               </b-button>
             </template>
             <template #row-details="row">
@@ -55,13 +69,18 @@
                     <div class="book-tile-img">
                       <b-img
                         fluid
-                        src="https://storage.fabulae.ru/images/authors/10538/foto_96852.jpg"
+                        :src="
+                          row.item.descripiton.photo.trim().length != 0
+                            ? row.item.descripiton.photo
+                            : $globals.assets.avatars.no_photo
+                        "
                         alt=""
                       />
                     </div>
                   </b-col>
                   <b-col
-                    ><router-link :to="{ name: 'ManagerBook' }"
+                    ><router-link
+                      :to="{ name: 'ManagerBook', params: { bookId: 1 } }"
                       >Редагувати</router-link
                     ></b-col
                   >
@@ -101,10 +120,34 @@
 </template>
 
 <script>
+import publicationMixin from "@/mixins/publication";
+
 export default {
+  mixins: [publicationMixin],
   data() {
     return {
-      fields: ["id", "title", "author", "show_details"],
+      fields: [
+        {
+          key: "identifier",
+          label: "ISBN",
+        },
+        {
+          key: "title",
+          label: "Назва книги",
+        },
+        {
+          key: "creator",
+          label: "Автор",
+        },
+        {
+          key: "show_details",
+          label: "Деталі",
+        },
+        {
+          key: "remove_publication",
+          label: "Видалити",
+        },
+      ],
       state: {
         pages: 100,
         current_page: 1,
@@ -119,16 +162,25 @@ export default {
           },
         },
       },
-      books: [
-        {
-          id: 12,
-          title: "Invisible Man",
-        },
-      ],
+      publications: [],
     };
   },
   methods: {
-    getBooks() {},
+    deletePublication(publIndex) {
+      console.info(publIndex);
+      // axios request todo and then
+      this.publications.splice(publIndex, 1);
+    },
+    getPublicationsAll() {
+      const self = this;
+      this.getPublications()
+        .then((response) => {
+          self.publications = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     filterBooks() {},
     goToPage() {
       this.goToPageNumber(this.state.go_to_page);
@@ -143,16 +195,18 @@ export default {
       this.state.filters.by.library_book_number = false;
     },
     addPublication() {
-      this.books.unshift({
-        id: "new",
+      this.publications.unshift({
+        identifier: "new",
         title: "Назва книги",
-        author: "Автор",
+        creator: "Автор",
         // todo
       });
     },
     openDetails() {},
   },
-  created() {},
+  created() {
+    this.getPublicationsAll();
+  },
 };
 </script>
 

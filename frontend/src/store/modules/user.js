@@ -56,6 +56,8 @@ const user = {
     },
     updateCreds(context) {
       context.state.role = localStorage.getItem("user-role");
+      context.state.authorized =
+        localStorage.getItem("user-is-authorized") === "true" ? true : false;
     },
   },
   mutations: {
@@ -82,6 +84,7 @@ const user = {
       localStorage.removeItem("user-id");
       localStorage.removeItem("user-token");
       localStorage.removeItem("user-role");
+      localStorage.removeItem("user-is-authorized");
     },
     login(state, payload) {
       state.authorized = true;
@@ -97,6 +100,7 @@ const user = {
 
       localStorage.setItem("user-id", payload.email);
       localStorage.setItem("user-role", payload.role.role);
+      localStorage.setItem("user-is-authorized", "true");
     },
     saveToken(state, payload) {
       state.auth_token = payload.token;

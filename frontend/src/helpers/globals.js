@@ -17,6 +17,8 @@ const globals = {
   reports: "reports/",
   stub_ebook: "http://localhost:3000/remlib.com/api/ebook",
   get_loan_cards_by_user_id: "loan_cards/user/",
+  get_publication_by_id: "publication/",
+  get_publications: "publications", //todo replace with pagination param
 
   assets: {
     avatars: {
