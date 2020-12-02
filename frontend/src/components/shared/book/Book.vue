@@ -140,9 +140,14 @@
               placeholder="Choose a file or drop it here..."
               drop-placeholder="Drop file here..."
             ></b-form-file>
-            <b-button @click="saveChanges" variant="primary" class="mt-3"
-              >Зберегти</b-button
-            >
+            <b-button-group size="sm" class="mt-2">
+              <b-button @click="saveChanges" variant="primary"
+                >Зберегти</b-button
+              >
+              <b-button variant="danger" @click="refreshPublication"
+                >Скинути зміни</b-button
+              >
+            </b-button-group>
           </b-form>
         </b-col>
       </b-row>
@@ -155,11 +160,27 @@
               >Додати видання</b-button
             >
             <b-button @click="refreshCatalogEntries">Оновити список</b-button>
+            <b-button @click="saveCatalogEntriesList" variant="success"
+              >Зберегти зміни</b-button
+            >
           </b-button-group>
           <b-table
             :fields="catalog_entries.fields"
             :items="catalog_entries.catalog_entries_related"
-          ></b-table>
+          >
+            <template #cell(status)="data"> {{ data.value.status }} </template>
+            <template #cell(more)="row">
+              <b-link @click="row.toggleDetails"
+                ><b-icon icon="arrow-down-square"></b-icon
+              ></b-link>
+            </template>
+            <template #cell(delete_ce)="row">
+              <b-link @click="deleteCatalogEntry(row.index)">
+                <b-icon icon="trash"></b-icon>
+              </b-link>
+            </template>
+            <template #row-details> hello </template>
+          </b-table>
         </b-col>
       </b-row>
     </b-container>
@@ -177,7 +198,7 @@ export default {
     return {
       publication: null,
 
-      file_digital_version: "",
+      file_digital_version: null,
       publication_types: [],
       publication_subjects: [],
       publ_type_new: null, //remove
@@ -185,26 +206,32 @@ export default {
       catalog_entries: {
         fields: [
           "id",
-          "item_number",
-          "copies",
-          "available_from",
-          "loan_days",
-          "more",
-          "delete",
-        ],
-        catalog_entries_related: [
           {
-            id: 1,
-            publication_id: 4,
-            library_id: 12,
-            item_number: 1212,
-            status_id: 12,
-            available_from: "",
-            copies_number: "",
-            copies_available: "",
-            loan_days: "",
+            key: "item_number",
+            label: "Номер",
+          },
+          {
+            key: "copies_number",
+            label: "Копій",
+          },
+          {
+            key: "loan_days",
+            label: "Макс. днів",
+          },
+          {
+            key: "status",
+            label: "Статус",
+          },
+          {
+            key: "more",
+            label: "Більше",
+          },
+          {
+            key: "delete_ce",
+            label: "Видалити",
           },
         ],
+        catalog_entries_related: [],
       },
     };
   },
@@ -214,19 +241,30 @@ export default {
     this.setUpRelatedCatalogEntries();
   },
   methods: {
+    saveCatalogEntriesList() {
+      //todo save all entries
+      this.refreshCatalogEntries();
+    },
+    refreshPublication() {
+      this.setUpPublication();
+    },
+    deleteCatalogEntry(catalogEntryIndex) {
+      // id must be replaced with more representative ID
+      this.catalog_entries.catalog_entries_related.splice(catalogEntryIndex, 1);
+      console.log("deleted");
+    },
     setUpRelatedCatalogEntries() {
       const self = this;
       this.get_ce_by_publication_id(this.publicationId)
         .then(function (response) {
-          self.catalog_entries_related = response.data;
+          self.catalog_entries.catalog_entries_related = response.data;
         })
         .catch(function (error) {
           console.log(error);
         });
     },
     refreshCatalogEntries() {
-      // todo
-      console.log("refreshed");
+      this.setUpRelatedCatalogEntries();
     },
     setUpPublication() {
       const self = this;
@@ -259,7 +297,9 @@ export default {
     addCatalogEntry() {
       this.catalog_entries.catalog_entries_related.unshift({
         id: "new",
-        publication_id: 4,
+        publication: this.publication,
+
+        // publication_id: 4,
         library_id: 12,
         item_number: 1212,
         status_id: 12,

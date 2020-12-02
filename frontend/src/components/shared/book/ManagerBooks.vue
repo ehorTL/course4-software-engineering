@@ -28,7 +28,7 @@
               <b-form-input type="text"></b-form-input>
             </b-col>
             <b-col md="2" class="mt-1">
-              <b-button size="sm">Пошук</b-button>
+              <b-button size="sm" variant="primary">Пошук</b-button>
             </b-col>
           </b-form-row>
         </b-form>
