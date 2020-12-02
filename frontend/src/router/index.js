@@ -68,7 +68,7 @@ const routes = [
         props: true,
       },
       {
-        path: "/manager/book/:bookId",
+        path: "/manager/book/:publicationId",
         name: "ManagerBook",
         component: Book,
         props: true,

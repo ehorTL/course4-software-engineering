@@ -9,6 +9,14 @@ export default {
     };
   },
   methods: {
+    get_ce_by_publication_id(publicationId) {
+      const url =
+        this.$globals.remlib_api_host +
+        this.$globals.get_ce_by_pid +
+        publicationId;
+
+      return this.$axios.get(url);
+    },
     ce_status_en2ua(status) {
       if (this.dict[status.status.toLowerCase()] !== undefined) {
         return {

@@ -2,7 +2,6 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import user from "./modules/user";
-import book from "./modules/book";
 import global_configs from "./modules/global_configs";
 import publication from "./modules/publication";
 import loan_card from "./modules/loan_card";
@@ -15,7 +14,6 @@ export default new Vuex.Store({
   actions: {},
   modules: {
     user: user,
-    book: book,
     global_configs: global_configs,
     publication: publication,
     loan_card: loan_card,

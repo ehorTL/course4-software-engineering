@@ -1,27 +1,26 @@
 <template>
   <div>
-    <b-container fluid>
+    <b-container fluid v-if="publication">
       <b-row>
         <b-col md="6" sm="12">
           <b-row>
             <b-col>
               <div class="publication-img">
                 <b-img
-                  fluid
-                  v-if="publication.descr_photo"
-                  :src="publication.descr_photo"
-                ></b-img>
-                <b-img
-                  v-else
-                  :src="$store.state.publication.default_image"
+                  v-if="publication.descripiton"
+                  :src="
+                    publication.descripiton.photo.trim().length != 0
+                      ? publication.descripiton.photo
+                      : $globals.assets.avatars.no_photo
+                  "
                   fluid
                 ></b-img>
               </div>
             </b-col>
             <b-col>
               <p>Title: {{ publication.title }}</p>
-              <p>Subject: {{ publication.subject_id }}</p>
               <p>Creator: {{ publication.creator }}</p>
+              <p>Subject: {{ publication.subject.name }}</p>
               <p>Source: {{ publication.source }}</p>
               <p>Publisher: {{ publication.publisher }}</p>
               <p>Publication date: {{ publication.publication_date }}</p>
@@ -29,7 +28,7 @@
               <p>Rights: {{ publication.rights }}</p>
               <p>Format: {{ publication.format }}</p>
               <p>Language: {{ publication.language }}</p>
-              <p>Type: {{ publication.type_id }}</p>
+              <p>Type: {{ publication.type.type }}</p>
               <p>Edition: {{ publication.edition }}</p>
             </b-col>
           </b-row>
@@ -47,7 +46,7 @@
               <b-form-input
                 class="mt-2"
                 type="text"
-                v-model="publication.subject_id"
+                v-model="publication.subject.name"
               ></b-form-input>
             </b-form-group>
             <b-form-group description="Creator">
@@ -109,7 +108,7 @@
             <b-form-group description="Publication type">
               <b-form-select
                 class="mt-2"
-                v-model="publication.publ_type"
+                v-model="publ_type_new"
                 :options="publication_types"
               >
                 <template #first>
@@ -128,7 +127,7 @@
             ></b-form-group>
             <b-form-group description="Description text">
               <b-form-textarea
-                v-model="publication.descr_text"
+                v-model="publication.descripiton.text"
                 placeholder="Enter description"
                 rows="3"
                 max-rows="6"
@@ -136,8 +135,8 @@
               ></b-form-textarea>
             </b-form-group>
             <b-form-file
-              v-model="publication.file_digital_version"
-              :state="Boolean(publication.file_digital_version)"
+              v-model="file_digital_version"
+              :state="Boolean(file_digital_version)"
               placeholder="Choose a file or drop it here..."
               drop-placeholder="Drop file here..."
             ></b-form-file>
@@ -151,9 +150,12 @@
     <b-container fluid class="mt-5">
       <b-row>
         <b-col md="12">
-          <b-button variant="primary" @click="addCatalogEntry"
-            >Додати видання</b-button
-          >
+          <b-button-group size="sm">
+            <b-button variant="primary" @click="addCatalogEntry"
+              >Додати видання</b-button
+            >
+            <b-button @click="refreshCatalogEntries">Оновити список</b-button>
+          </b-button-group>
           <b-table
             :fields="catalog_entries.fields"
             :items="catalog_entries.catalog_entries_related"
@@ -165,32 +167,20 @@
 </template>
 
 <script>
+import publicationMixin from "@/mixins/publication";
+import catalogEntryMixin from "@/mixins/catalog_entry";
+
 export default {
-  props: ["bookId"],
+  mixins: [publicationMixin, catalogEntryMixin],
+  props: ["publicationId"],
   data() {
     return {
-      publication: {
-        id: "",
-        title: "",
-        subject_id: "",
-        descr_text: "",
-        descr_photo: null,
-        creator: "",
-        source: "",
-        publisher: "",
-        publication_date: "",
-        contributor: "",
-        rights: "",
-        format: "",
-        language: "",
-        type_id: 1, // not used
-        publ_type: null,
-        edition: "",
+      publication: null,
 
-        file_digital_version: "",
-      },
+      file_digital_version: "",
       publication_types: [],
       publication_subjects: [],
+      publ_type_new: null, //remove
 
       catalog_entries: {
         fields: [
@@ -219,19 +209,50 @@ export default {
     };
   },
   created() {
-    this.publication_types = this.$store.state.publication.types.map((t) => {
-      return {
-        value: t.id,
-        text: t.name,
-      };
-    });
-    // for (let t of this.publication_types) {
-    //   if (t.value == this.publication.type_id) {
-    //     this.publication.publ_type = t;
-    //   }
-    // }
+    this.setUpPublication();
+    this.setUpPublicationTypes();
+    this.setUpRelatedCatalogEntries();
   },
   methods: {
+    setUpRelatedCatalogEntries() {
+      const self = this;
+      this.get_ce_by_publication_id(this.publicationId)
+        .then(function (response) {
+          self.catalog_entries_related = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    refreshCatalogEntries() {
+      // todo
+      console.log("refreshed");
+    },
+    setUpPublication() {
+      const self = this;
+      this.getPublicationById(this.publicationId)
+        .then((response) => {
+          self.publication = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    setUpPublicationTypes() {
+      const self = this;
+      this.getPublicationTypes()
+        .then((response) => {
+          self.publication_types = response.data.map((t) => {
+            return {
+              value: t.id,
+              text: t.name,
+            };
+          });
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+    },
     saveChanges() {
       // todo
     },

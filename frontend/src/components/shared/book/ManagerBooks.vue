@@ -80,7 +80,12 @@
                   </b-col>
                   <b-col
                     ><router-link
-                      :to="{ name: 'ManagerBook', params: { bookId: 1 } }"
+                      :to="{
+                        name: 'ManagerBook',
+                        params: {
+                          publicationId: row.item.identifier,
+                        },
+                      }"
                       >Редагувати</router-link
                     ></b-col
                   >

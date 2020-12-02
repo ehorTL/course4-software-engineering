@@ -206,7 +206,6 @@ export default {
         });
     },
     searchCatalogEntriesByPublication(publication) {
-      // console.log(publication);
       const url =
         this.$globals.remlib_api_host +
         this.$globals.get_ce_by_pid +

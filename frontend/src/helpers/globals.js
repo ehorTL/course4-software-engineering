@@ -19,6 +19,7 @@ const globals = {
   get_loan_cards_by_user_id: "loan_cards/user/",
   get_publication_by_id: "publication/",
   get_publications: "publications", //todo replace with pagination param
+  get_publication_types: "publication_types",
 
   assets: {
     avatars: {

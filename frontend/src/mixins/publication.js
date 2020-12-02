@@ -15,5 +15,10 @@ export default {
         this.$globals.remlib_api_host + this.$globals.get_publications;
       return this.$axios.get(url);
     },
+    getPublicationTypes() {
+      const url =
+        this.$globals.remlib_api_host + this.$globals.get_publication_types;
+      return this.$axios.get(url);
+    },
   },
 };
