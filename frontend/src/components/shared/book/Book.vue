@@ -190,9 +190,10 @@
 <script>
 import publicationMixin from "@/mixins/publication";
 import catalogEntryMixin from "@/mixins/catalog_entry";
+import libraryMixin from "@/mixins/library";
 
 export default {
-  mixins: [publicationMixin, catalogEntryMixin],
+  mixins: [publicationMixin, catalogEntryMixin, libraryMixin],
   props: ["publicationId"],
   data() {
     return {
@@ -203,6 +204,7 @@ export default {
       publication_subjects: [],
       publ_type_new: null, //remove
 
+      libraries: [],
       catalog_entries: {
         fields: [
           "id",
@@ -239,8 +241,19 @@ export default {
     this.setUpPublication();
     this.setUpPublicationTypes();
     this.setUpRelatedCatalogEntries();
+    // this.getLibrariesAll();
   },
   methods: {
+    getLibrariesAll() {
+      const self = this;
+      this.get_libraries()
+        .then((response) => {
+          self.libraries = response.data;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
     saveCatalogEntriesList() {
       //todo save all entries
       this.refreshCatalogEntries();
@@ -298,15 +311,22 @@ export default {
       this.catalog_entries.catalog_entries_related.unshift({
         id: "new",
         publication: this.publication,
-
-        // publication_id: 4,
-        library_id: 12,
-        item_number: 1212,
-        status_id: 12,
+        library: {
+          //todo fetch libraries, and set any from the list
+          id: 1,
+          name: "",
+          address: "",
+        },
+        item_number: "lib_num",
+        status: {
+          //todo fix status
+          id: 1,
+          status: "status",
+        },
         available_from: "",
-        copies_number: "",
-        copies_available: "",
-        loan_days: "",
+        copies_number: 0,
+        copies_available: 0,
+        loan_days: 0,
       });
     },
   },

@@ -20,6 +20,7 @@ const globals = {
   get_publication_by_id: "publication/",
   get_publications: "publications", //todo replace with pagination param
   get_publication_types: "publication_types",
+  get_libraries: "libraries/",
 
   assets: {
     avatars: {
