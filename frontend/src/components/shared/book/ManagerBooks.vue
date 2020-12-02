@@ -33,9 +33,14 @@
           </b-form-row>
         </b-form>
         <div class="mt-5">
-          <b-button @click="addPublication" variant="primary" size="sm"
-            >Додати публікацію</b-button
-          >
+          <b-button-group size="sm" class="mt-3">
+            <b-button @click="addPublication" variant="primary"
+              >Додати публікацію</b-button
+            >
+            <b-button @click="refreshCatalogEntriesList"
+              >Оновити список</b-button
+            >
+          </b-button-group>
           <b-table
             striped
             hover
@@ -171,6 +176,9 @@ export default {
     };
   },
   methods: {
+    refreshCatalogEntriesList() {
+      this.getPublicationsAll();
+    },
     deletePublication(publIndex) {
       console.info(publIndex);
       // axios request todo and then
@@ -204,7 +212,9 @@ export default {
         identifier: "new",
         title: "Назва книги",
         creator: "Автор",
-        // todo
+        descripiton: {
+          photo: this.$globals.assets.avatars.no_photo,
+        },
       });
     },
     openDetails() {},

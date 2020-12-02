@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-container fluid v-if="publication">
+    <b-container fluid v-if="publication" class="mt-3">
       <b-row>
-        <b-col md="6" sm="12">
+        <b-col md="6" cols="12">
           <b-row>
             <b-col>
               <div class="publication-img">
@@ -16,25 +16,37 @@
                   fluid
                 ></b-img>
               </div>
+              <div class="text-center">
+                <div>
+                  <b-link @click="deletePhoto">Видалити фото</b-link>
+                </div>
+                <div>
+                  <b-link @click="setPhoto">Завантажити фото</b-link>
+                </div>
+              </div>
             </b-col>
             <b-col>
-              <p>Title: {{ publication.title }}</p>
-              <p>Creator: {{ publication.creator }}</p>
-              <p>Subject: {{ publication.subject.name }}</p>
-              <p>Source: {{ publication.source }}</p>
-              <p>Publisher: {{ publication.publisher }}</p>
-              <p>Publication date: {{ publication.publication_date }}</p>
-              <p>Contributor: {{ publication.contributor }}</p>
-              <p>Rights: {{ publication.rights }}</p>
-              <p>Format: {{ publication.format }}</p>
-              <p>Language: {{ publication.language }}</p>
-              <p>Type: {{ publication.type.type }}</p>
-              <p>Edition: {{ publication.edition }}</p>
+              <p><strong>Title:</strong> {{ publication.title }}</p>
+              <p><strong>Creator:</strong> {{ publication.creator }}</p>
+              <p><strong>Subject:</strong> {{ publication.subject.name }}</p>
+              <p><strong>Source:</strong> {{ publication.source }}</p>
+              <p><strong>Publisher:</strong> {{ publication.publisher }}</p>
+              <p>
+                <strong>Publication date:</strong>
+                {{ publication.publication_date }}
+              </p>
+              <p><strong>Contributor:</strong> {{ publication.contributor }}</p>
+              <p><strong>Rights:</strong> {{ publication.rights }}</p>
+              <p><strong>Format:</strong> {{ publication.format }}</p>
+              <p><strong>Language:</strong> {{ publication.language }}</p>
+              <p><strong>Type:</strong> {{ publication.type.type }}</p>
+              <p><strong>Edition:</strong> {{ publication.edition }}</p>
             </b-col>
           </b-row>
+
           <!-- <div class="publication-passport"></div> -->
         </b-col>
-        <b-col md="6" sm="12">
+        <b-col md="6" cols="12">
           <b-form>
             <b-form-group description="Title">
               <b-form-input
@@ -134,12 +146,13 @@
                 class="mt-2"
               ></b-form-textarea>
             </b-form-group>
-            <b-form-file
-              v-model="file_digital_version"
-              :state="Boolean(file_digital_version)"
-              placeholder="Choose a file or drop it here..."
-              drop-placeholder="Drop file here..."
-            ></b-form-file>
+            <input
+              type="file"
+              style="visibility: none"
+              ref="publicationPhotoFile"
+              accept="image/jpeg,image/png,image/gif"
+              @change="loadBase64Photo"
+            />
             <b-button-group size="sm" class="mt-2">
               <b-button @click="saveChanges" variant="primary"
                 >Зберегти</b-button
@@ -244,6 +257,19 @@ export default {
     // this.getLibrariesAll();
   },
   methods: {
+    loadBase64Photo() {
+      const self = this;
+      let file = this.$refs.publicationPhotoFile.files[0];
+      self.getBase64(file).then((data) => {
+        this.publication.descripiton.photo = data;
+      });
+    },
+    setPhoto() {
+      this.$refs.publicationPhotoFile.click();
+    },
+    deletePhoto() {
+      this.publication.descripiton.photo = "";
+    },
     getLibrariesAll() {
       const self = this;
       this.get_libraries()
@@ -256,10 +282,39 @@ export default {
     },
     saveCatalogEntriesList() {
       //todo save all entries
-      this.refreshCatalogEntries();
+      const self = this;
+      this.$swal
+        .fire({
+          title: "Зберегти зміни?",
+          showDenyButton: true,
+          confirmButtonText: `Так`,
+          denyButtonText: `Ні`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            self.$swal.fire("Зміни збережено", "", "success");
+            // after request promise was resolves
+            self.refreshCatalogEntries();
+          } else if (result.isDenied) {
+            self.$swal.fire("Відмінено", "", "info");
+          }
+        });
     },
     refreshPublication() {
-      this.setUpPublication();
+      const self = this;
+      this.$swal
+        .fire({
+          title: "Скинути зміни?",
+          text: "Усі не збережені зміни будуть втрачені",
+          showDenyButton: true,
+          confirmButtonText: `Так`,
+          denyButtonText: `Відміна`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            self.setUpPublication();
+          }
+        });
     },
     deleteCatalogEntry(catalogEntryIndex) {
       // id must be replaced with more representative ID
@@ -273,11 +328,25 @@ export default {
           self.catalog_entries.catalog_entries_related = response.data;
         })
         .catch(function (error) {
-          console.log(error);
+          self.catalog_entries.catalog_entries = [];
         });
     },
     refreshCatalogEntries() {
-      this.setUpRelatedCatalogEntries();
+      const self = this;
+      this.$swal
+        .fire({
+          title: "Оновити список?",
+          text: "Не збережені зміни будуть втрачені",
+          showDenyButton: true,
+          confirmButtonText: `Так`,
+          denyButtonText: `Відміна`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            self.setUpRelatedCatalogEntries();
+            self.$swal.fire("Оновлено", "", "success");
+          }
+        });
     },
     setUpPublication() {
       const self = this;
@@ -286,8 +355,11 @@ export default {
           self.publication = response.data;
         })
         .catch((error) => {
-          console.error(error);
+          self.setUpPublicationDefault();
         });
+    },
+    setUpPublicationDefault() {
+      this.publication = this.publication_default;
     },
     setUpPublicationTypes() {
       const self = this;
@@ -305,7 +377,19 @@ export default {
         });
     },
     saveChanges() {
-      // todo
+      //todo request
+      this.$swal
+        .fire({
+          title: "Зберегти зміни?",
+          showDenyButton: true,
+          confirmButtonText: `Так`,
+          denyButtonText: `Відміна`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            // send update request
+          }
+        });
     },
     addCatalogEntry() {
       this.catalog_entries.catalog_entries_related.unshift({
@@ -343,4 +427,10 @@ export default {
   max-width: 200px;
   padding-left: 15px;
 }
+/* .remove-photo-button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 100;
+} */
 </style>
