@@ -148,11 +148,19 @@
             </b-form-group>
             <input
               type="file"
-              style="visibility: none"
+              style="display: none"
               ref="publicationPhotoFile"
               accept="image/jpeg,image/png,image/gif"
               @change="loadBase64Photo"
             />
+            <b-form-group description="Електронна версія">
+              <b-form-file
+                id="file-ebook"
+                size="sm"
+                placeholder="Не вибрано жодного файлу"
+              ></b-form-file>
+            </b-form-group>
+
             <b-button-group size="sm" class="mt-2">
               <b-button @click="saveChanges" variant="primary"
                 >Зберегти</b-button
@@ -192,7 +200,42 @@
                 <b-icon icon="trash"></b-icon>
               </b-link>
             </template>
-            <template #row-details> hello </template>
+            <template #row-details="row">
+              <b-form>
+                <b-form-group description="Бібліотечний номер">
+                  <b-form-input
+                    type="text"
+                    placeholder="Бібліотечний номер"
+                    class="mt-1"
+                    v-model="row.item.item_number"
+                  ></b-form-input>
+                </b-form-group>
+                <b-form-group description="Копій">
+                  <b-form-input
+                    type="number"
+                    placeholder="Копій"
+                    class="mt-1"
+                    v-model="row.item.copies_number"
+                  ></b-form-input>
+                </b-form-group>
+                <b-form-group description="Статус">
+                  <b-form-select
+                    v-model="row.item.status"
+                    :options="ce_statuses"
+                    class="mb-3"
+                  ></b-form-select>
+                </b-form-group>
+                <b-form-group description="Максимум днів">
+                  <b-form-input
+                    type="number"
+                    placeholder="Максимум днів"
+                    class="mt-1"
+                    v-model="row.item.loan_days"
+                    min="0"
+                  ></b-form-input>
+                </b-form-group>
+              </b-form>
+            </template>
           </b-table>
         </b-col>
       </b-row>
@@ -204,13 +247,15 @@
 import publicationMixin from "@/mixins/publication";
 import catalogEntryMixin from "@/mixins/catalog_entry";
 import libraryMixin from "@/mixins/library";
+import ceStatusesMixin from "@/mixins/ce_statuses";
 
 export default {
-  mixins: [publicationMixin, catalogEntryMixin, libraryMixin],
+  mixins: [publicationMixin, catalogEntryMixin, libraryMixin, ceStatusesMixin],
   props: ["publicationId"],
   data() {
     return {
       publication: null,
+      ce_statuses: [],
 
       file_digital_version: null,
       publication_types: [],
@@ -220,7 +265,10 @@ export default {
       libraries: [],
       catalog_entries: {
         fields: [
-          "id",
+          {
+            key: "id",
+            label: "ID",
+          },
           {
             key: "item_number",
             label: "Номер",
@@ -254,14 +302,30 @@ export default {
     this.setUpPublication();
     this.setUpPublicationTypes();
     this.setUpRelatedCatalogEntries();
+    this.setAllStatuses();
     // this.getLibrariesAll();
   },
   methods: {
+    setAllStatuses() {
+      const self = this;
+      this.get_statuses()
+        .then((response) => {
+          self.ce_statuses = response.data.map((status) => {
+            return {
+              text: status.status,
+              value: status,
+            };
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     loadBase64Photo() {
       const self = this;
       let file = this.$refs.publicationPhotoFile.files[0];
       self.getBase64(file).then((data) => {
-        this.publication.descripiton.photo = data;
+        self.publication.descripiton.photo = data;
       });
     },
     setPhoto() {

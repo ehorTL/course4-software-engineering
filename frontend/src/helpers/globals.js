@@ -21,6 +21,7 @@ const globals = {
   get_publications: "publications", //todo replace with pagination param
   get_publication_types: "publication_types",
   get_libraries: "libraries/",
+  get_ce_statuses: "ce_statuses",
 
   assets: {
     avatars: {

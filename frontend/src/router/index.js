@@ -145,16 +145,16 @@ const router = new VueRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   if (to.path.startsWith("/manager")) {
-//     if (localStorage.getItem("user-role") == "manager") {
-//       next();
-//     } else next({ name: "LoginPage" });
-//   } else if (to.path.startsWith("/admin")) {
-//     if (localStorage.getItem("user-role") == "admin") {
-//       next();
-//     } else next({ name: "LoginPage" });
-//   } else next();
-// });
+router.beforeEach((to, from, next) => {
+  if (to.path.startsWith("/manager")) {
+    if (localStorage.getItem("user-role") == "manager") {
+      next();
+    } else next({ name: "LoginPage" });
+  } else if (to.path.startsWith("/admin")) {
+    if (localStorage.getItem("user-role") == "admin") {
+      next();
+    } else next({ name: "LoginPage" });
+  } else next();
+});
 
 export default router;
