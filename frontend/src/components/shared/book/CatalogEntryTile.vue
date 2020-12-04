@@ -40,14 +40,14 @@
             <b-col cols="4" md="8">
               <div>
                 {{
-                  catalog_entry.copies_available == 0
+                  catalog_entry.copies_available <= 0
                     ? "Недоступна"
                     : "У наявності"
                 }}
               </div>
               <div v-if="$store.getters.userRole == 'reader'">
                 <b-link
-                  v-if="catalog_entry.copies_available == 0"
+                  v-if="catalog_entry.copies_available <= 0"
                   @click="bookCatalogEntry"
                 >
                   Забронювати
@@ -81,8 +81,48 @@ export default {
     };
   },
   methods: {
-    bookCatalogEntry() {},
-    takeCatalogEntry() {},
+    bookCatalogEntry() {
+      const self = this;
+      this.$swal
+        .fire({
+          title:
+            "Забронювти видання на " + self.catalog_entry.loan_days + " днів?",
+          showDenyButton: true,
+          confirmButtonText: `Так`,
+          denyButtonText: `Відміна`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            self.$swal.fire(
+              "Заброньовано",
+              "Заберіть замовлене видання протягом " +
+                self.catalog_entry.loan_days +
+                "днів",
+              "success"
+            );
+          } else if (result.isDenied) {
+            self.$swal.fire("Відмінено", "", "info");
+          }
+        });
+    },
+    takeCatalogEntry() {
+      const self = this;
+      this.$swal
+        .fire({
+          title: "Взяти видання на " + self.catalog_entry.loan_days + " днів?",
+          showDenyButton: true,
+          confirmButtonText: `Так`,
+          denyButtonText: `Відміна`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            // todo request
+            self.$swal.fire("Отримайте видання", "", "success");
+          } else if (result.isDenied) {
+            self.$swal.fire("Відмінено", "", "info");
+          }
+        });
+    },
     openCatalogEntry() {
       this.$router.push({
         name: "ReaderCatalogEntry",

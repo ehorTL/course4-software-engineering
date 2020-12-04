@@ -1,7 +1,11 @@
 <template>
-  <div>
-    <b-button variant="primary" @click="addManager">Додати менеджера</b-button>
-    <b-button variant="primary" @click="getManagers">Оновити список</b-button>
+  <div class="mt-2">
+    <b-button-group size="sm" class="">
+      <b-button variant="primary" @click="addManager"
+        >Додати менеджера</b-button
+      >
+      <b-button variant="info" @click="getManagers">Оновити список</b-button>
+    </b-button-group>
     <b-table striped hover :items="managers" :fields="header_fields">
       <template #cell(show_details)="row">
         <b-button size="sm" @click="row.toggleDetails" class="mr-2">
