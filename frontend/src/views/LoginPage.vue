@@ -57,7 +57,7 @@
               id="modal-forgot-pass"
               title="Забули пароль"
               ok-only
-              ok-title="Cancel"
+              ok-title="Відміна"
               ok-variant="secondary"
               button-size="sm"
             >

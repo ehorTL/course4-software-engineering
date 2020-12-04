@@ -118,6 +118,12 @@
               ></a>
               <div v-if="state.change_pass_opened">
                 <b-form-input
+                  v-model="reader.new_password.old_pass"
+                  type="password"
+                  class="mb-2 mt-2"
+                  placeholder="Введіть старий пароль"
+                ></b-form-input>
+                <b-form-input
                   v-model="reader.new_password.pass"
                   type="password"
                   class="mb-2 mt-2"
@@ -200,6 +206,7 @@ export default {
         new_password: {
           pass: "",
           conf_pass: "",
+          old_pass: "",
         },
       },
       state: {
@@ -296,11 +303,11 @@ export default {
         .then((result) => {
           if (result.isConfirmed) {
             // api call PUT password and THEN
-            self.reader.new_password.pass = self.reader.new_password.conf_pass =
+            self.reader.new_password.pass = self.reader.new_password.conf_pass = self.reader.new_password.old_pass =
               "";
             self.$swal.fire("Пароль змінено", "", "success");
           } else if (result.isDenied) {
-            self.reader.new_password.pass = self.reader.new_password.conf_pass =
+            self.reader.new_password.pass = self.reader.new_password.conf_pass = self.reader.new_password.old_pass =
               "";
             self.$swal.fire("Пароль не змінено", "", "info");
           }
@@ -308,7 +315,10 @@ export default {
     },
     changePasswordFormIsValid() {
       let isValid = true;
-      if (
+      if (this.reader.new_password.old_pass == "") {
+        this.state.errors.push("Введіть старий пароль");
+        isValid = false;
+      } else if (
         this.reader.new_password.pass != this.reader.new_password.conf_pass ||
         this.reader.new_password.conf_pass == null
       ) {
