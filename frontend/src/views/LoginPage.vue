@@ -53,8 +53,15 @@
             </b-modal>
           </div>
           <div>
-            <b-modal id="modal-forgot-pass" title="Забули пароль">
-              <forgot-password></forgot-password>
+            <b-modal
+              id="modal-forgot-pass"
+              title="Забули пароль"
+              ok-only
+              ok-title="Cancel"
+              ok-variant="secondary"
+              button-size="sm"
+            >
+              <forgot-password @fp-hide="forgotPasswordClose"></forgot-password>
             </b-modal>
           </div>
         </div>
@@ -147,11 +154,19 @@ export default {
     forgotPassword() {
       this.$bvModal.show("modal-forgot-pass");
     },
+    forgotPasswordClose() {
+      this.$bvModal.hide("modal-forgot-pass");
+    },
     closeRegistration() {
       this.$bvModal.hide("modal-registering");
     },
     closeRegistrationSuccess() {
       this.closeRegistration();
+      this.$swal.fire(
+        "Успішно зареєстровано!",
+        "Очікуйте лист з підтвердженням реєстрації на вказану пошту!",
+        "success"
+      );
     },
     closeRegistrationFail() {
       this.closeRegistration();

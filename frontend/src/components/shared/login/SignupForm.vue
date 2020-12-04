@@ -58,7 +58,12 @@
           >Реєстрація</b-button
         >
       </div>
-      <b-toast variant="danger" id="errors-toast" v-on:hide="errors = []">
+      <b-toast
+        variant="danger"
+        id="errors-toast-2"
+        title="Сповіщення"
+        v-on:hide="errors = []"
+      >
         <div v-for="(e, index) in errors" :key="index">{{ e }}</div>
       </b-toast>
     </b-form>
@@ -148,7 +153,7 @@ export default {
       return isValid;
     },
     showValidationErrors() {
-      this.$bvToast.show("errors-toast");
+      this.$bvToast.show("errors-toast-2");
 
       // this.errors = [];
     },
