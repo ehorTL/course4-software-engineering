@@ -45,14 +45,25 @@
                     : "У наявності"
                 }}
               </div>
-              <div v-if="$store.getters.userRole == 'reader'">
-                <b-link
-                  v-if="catalog_entry.copies_available <= 0"
-                  @click="bookCatalogEntry"
-                >
-                  Забронювати
-                </b-link>
-                <b-link v-else @click="takeCatalogEntry"> Взяти книгу </b-link>
+              <div
+                v-if="
+                  $store.getters.userRole == 'reader' &&
+                    catalog_entry.copies_number > 0
+                "
+              >
+                <div>
+                  <b-link @click="bookCatalogEntry">
+                    Забронювати
+                  </b-link>
+                </div>
+                <div>
+                  <b-link
+                    v-if="catalog_entry.copies_available > 0"
+                    @click="takeCatalogEntry"
+                  >
+                    Взяти книгу
+                  </b-link>
+                </div>
               </div>
             </b-col>
             <b-col cols="4" md="4" style="background-color: transparent">
@@ -68,7 +79,10 @@
 </template>
 
 <script>
+import dateHelperMixin from "@/mixins/date_helper";
+
 export default {
+  mixins: [dateHelperMixin],
   props: ["catalogEntry", "userRole"],
   data() {
     return {
@@ -87,6 +101,14 @@ export default {
         .fire({
           title:
             "Забронювти видання на " + self.catalog_entry.loan_days + " днів?",
+          text:
+            "Ваше бронювання буде збережено на період з " +
+            self.dateToFormat(self.catalog_entry.available_from) +
+            " до " +
+            self.addDaysToDay(
+              self.catalog_entry.available_from,
+              self.catalog_entry.loan_days
+            ),
           showDenyButton: true,
           confirmButtonText: `Так`,
           denyButtonText: `Відміна`,
@@ -97,7 +119,7 @@ export default {
               "Заброньовано",
               "Заберіть замовлене видання протягом " +
                 self.catalog_entry.loan_days +
-                "днів",
+                " днів",
               "success"
             );
           } else if (result.isDenied) {
@@ -139,7 +161,7 @@ export default {
           method,
           responseType: "blob",
         })
-        .then(function (response) {
+        .then(function(response) {
           const downloadUrl = window.URL.createObjectURL(
             new Blob([response.data])
           );
@@ -150,13 +172,15 @@ export default {
           link.click();
           link.remove();
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
   },
   created() {
-    console.log(this.catalog_entry);
+    console.log(this.$moment().format("LT"));
+    console.log(this.$moment.locale());
+    console.log(this.$moment("20111031", "YYYYMMDD"));
   },
 };
 </script>

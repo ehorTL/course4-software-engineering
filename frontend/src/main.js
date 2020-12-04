@@ -55,6 +55,10 @@ Vue.config.productionTip = false;
 import { const_globals as globals } from "@/helpers/globals";
 Vue.prototype.$globals = globals;
 
+// https://github.com/brockpetrie/vue-moment#readme
+// this.$moment -> momentjs instance
+Vue.use(require("vue-moment"));
+
 new Vue({
   router,
   store,
