@@ -7,7 +7,40 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
       http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
 
+
 	<changeSet id="1" author="postgres">
+		<createTable tableName="subject">
+			<column name="id" type="int">
+				<constraints nullable="false" 
+				primaryKey="true" 
+				primaryKeyName="subject_pk"/>
+			</column>
+			<column name="name" type="varchar">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="subject"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="2" author="postgres">
+		<createTable tableName="type">
+			<column name="id" type="int">
+				<constraints nullable="false" 
+				primaryKey="true" 
+				primaryKeyName="type_pk"/>
+			</column>
+			<column name="type" type="varchar">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="type"/>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="3" author="postgres">
 		<createTable tableName="publication">
 			<column name="id" type="int">
 				<constraints nullable="false" 
@@ -25,7 +58,7 @@
 				<constraints nullable="false" />
 			</column>
 			<column name="publisher" type="varchar" />
-			<column name="subject" type="varchar" />
+			<column name="subject_id" type="int" />
 			<column name="descr_text" type="clob" />
 			<column name="descr_photo" type="blob" />
 			<column name="source" type="varchar" />
@@ -36,41 +69,44 @@
 			<column name="language" type="varchar">
 				<constraints nullable="false"/>
 			</column>
-			<column name="type" type="varchar" />
+			<column name="type_id" type="int" />
 		</createTable>
+		
+		<addForeignKeyConstraint constraintName="type_publication_fk" 
+			referencedTableName="type" baseColumnNames="type_id" baseTableName="publication" referencedColumnNames="id"
+			onDelete="CASCADE" onUpdate="CASCADE"/>
+			
+		<addForeignKeyConstraint constraintName="subject_publication_fk" 
+			referencedTableName="subject" baseColumnNames="subject_id" baseTableName="publication" referencedColumnNames="id"
+			onDelete="CASCADE" onUpdate="CASCADE"/>
 		
 		<rollback>
 			<dropTable tableName="publication"/>
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="2" author="postgres">
-		<createTable tableName="address">
+	
+	<changeSet id="4" author="postgres">
+		<createTable tableName="role">
 			<column name="id" type="int">
-				<constraints primaryKey="true" primaryKeyName="address_id"/>
+				<constraints nullable="false" 
+				primaryKey="true" 
+				primaryKeyName="role_pk"/>
 			</column>
-			<column name="country_code" type="varchar" defaultValue="UA"/>
-			<column name="street_id" type="bigint" />
-			<column name="building" type="varchar">
-				<constraints nullable="false"/>
+			<column name="role" type="varchar">
+				<constraints nullable="false" />
 			</column>
-			<column name="flat" type="int"/>
 		</createTable>
-		<addForeignKeyConstraint constraintName="street_address_fk" 
-			referencedTableName="street" baseColumnNames="street_id" baseTableName="address" referencedColumnNames="id"
-			referencedTableSchemaName="address" onDelete="CASCADE" onUpdate="CASCADE"/>
-		
 		<rollback>
-			<dropTable tableName="address"/>
+			<dropTable tableName="role"/>
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="3" author="postgres">
+	<changeSet id="5" author="postgres">
 		<createTable tableName="user">
 			<column name="email" type="varchar">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="user_pk" unique="true"/>
 			</column>
-			<column name="student_card" type="varchar"/>
 			<column name="surname" type="varchar">
 				<constraints nullable="false"/>
 			</column>
@@ -85,14 +121,12 @@
 			<column name="password" type="varchar">
 				<constraints nullable="false"/>
 			</column>
-			<column name="address_id" type="bigint">
-				<constraints nullable="false"/>
-			</column>
+			<column name="role_id" type="int" />
 			<column name="fee" type="int" defaultValue="0"/>
 		</createTable>
 		
-		<addForeignKeyConstraint constraintName="user_address_fk" 
-			referencedTableName="address" baseColumnNames="address_id" baseTableName="user" referencedColumnNames="id"
+		<addForeignKeyConstraint constraintName="user_role_fk" 
+			referencedTableName="role" baseColumnNames="role_id" baseTableName="user" referencedColumnNames="id"
 			onDelete="CASCADE" onUpdate="CASCADE"/>
 		
 		<rollback>
@@ -100,25 +134,22 @@
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="4" author="postgres">
+	<changeSet id="6" author="postgres">
 		<createTable tableName="library">
 			<column name="id" type="bigint">
 				<constraints primaryKey="true" primaryKeyName="library_id"/>
 			</column>
 			<column name="name" type="varchar"/>
-			<column name="address_id" type="bigint">
+			<column name="address" type="varchar">
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
-		<addForeignKeyConstraint constraintName="library_address_fk" referencedTableName="address" 
-				baseColumnNames="address_id" baseTableName="library" referencedColumnNames="id"
-				onDelete="CASCADE" onUpdate="CASCADE"/>
 		<rollback>
 			<dropTable tableName="library"/>
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="5" author="postgres">
+	<changeSet id="7" author="postgres">
 		<createTable tableName="status">
 			<column name="id" type="bigint">
 				<constraints primaryKey="true" primaryKeyName="status_pk"/>
@@ -141,7 +172,7 @@
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="6" author="postgres">
+	<changeSet id="8" author="postgres">
 		<createTable tableName="catalog_entry">
 			<column name="id" type="int">
 				<constraints primaryKey="true" primaryKeyName="catalog_entry_pk"/>
@@ -189,7 +220,7 @@
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="7" author="postgres">
+	<changeSet id="9" author="postgres">
 		<createTable tableName="loan_status">
 			<column name="id" type="bigint">
 				<constraints primaryKey="true" primaryKeyName="loan_status_pk"/>
@@ -214,12 +245,12 @@
 		</rollback>
 	</changeSet>
 	
-	<changeSet id="8" author="postgres">
+	<changeSet id="10" author="postgres">
 		<createTable tableName="loan_card">
 			<column name="id" type="int">
 				<constraints primaryKey="true" primaryKeyName="loan_card_pk"/>
 			</column>
-			<column name="user_id" type="bigint">
+			<column name="user_email" type="varchar">
 				<constraints nullable="false"/>
 			</column>
 			<column name="catalog_entry_id" type="bigint">
@@ -238,12 +269,7 @@
 			<column name="notes" type="clob" />
 		</createTable>
 		
-		<dropColumn tableName="loan_card" columnName="user_id"></dropColumn>
-		<addColumn tableName="loan_card">
-			<column name="user_email" type="varchar" afterColumn="id">
-				<constraints nullable="false"/>
-			</column>
-		</addColumn>
+		
 		
 		<addForeignKeyConstraint constraintName="loan_card_user_fk" referencedTableName="user" baseColumnNames="user_email" 
 				baseTableName="loan_card" referencedColumnNames="email" onDelete="CASCADE" onUpdate="CASCADE"/>
@@ -255,6 +281,49 @@
 			<dropTable tableName="loan_card"/>
 		</rollback>
 		
+	</changeSet>
+	
+	<changeSet id="11" author="postgres" runOnChange="true">
+		<loadUpdateData tableName="subject"
+					file="classpath:/db/data/subject.csv"
+					separator=";"
+					encoding="windows-1251"
+					primaryKey="id">
+			<column header="id" name="id"/>
+			<column header="name" name="name"/>
+		</loadUpdateData>
+	</changeSet>
+	
+	<changeSet  author="postgres"  id="12">  
+    	<createSequence 
+            cycle="true"  
+            dataType="int"  
+            incrementBy="2" 
+            sequenceName="publication_id_seq"/>  
+	</changeSet>
+	
+	<changeSet  author="postgres"  id="13">  
+    	<createSequence 
+            cycle="true"  
+            dataType="int"  
+            incrementBy="2" 
+            sequenceName="library_id_seq"/>  
+	</changeSet>
+	
+	<changeSet  author="postgres"  id="14">  
+    	<createSequence 
+            cycle="true"  
+            dataType="int"  
+            incrementBy="2" 
+            sequenceName="catalog_entry_id_seq"/>  
+	</changeSet>
+	
+	<changeSet  author="postgres"  id="15">  
+    	<createSequence 
+            cycle="true"  
+            dataType="int"  
+            incrementBy="2" 
+            sequenceName="loan_card_id_seq"/>  
 	</changeSet>
 
 </databaseChangeLog>
