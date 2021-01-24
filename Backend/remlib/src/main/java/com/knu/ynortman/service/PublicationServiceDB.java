@@ -8,15 +8,21 @@ import com.knu.ynortman.dto.PublicationDTO;
 import com.knu.ynortman.entity.Publication;
 import com.knu.ynortman.exception.ServerException;
 import com.knu.ynortman.repository.PublicationRepository;
+import com.knu.ynortman.repository.SubjectRepository;
 
 import java.util.function.Consumer;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class PublicationServiceDB implements PublicationService {
 
 	private final PublicationRepository publicationRepo;
+	private final SubjectRepository subjectRepo;
 	
-	public PublicationServiceDB(PublicationRepository publicationRepo) {
+	public PublicationServiceDB(PublicationRepository publicationRepo, SubjectRepository subjectRepo) {
 		this.publicationRepo = publicationRepo;
+		this.subjectRepo = subjectRepo;
 	}
 	
 	@Override
@@ -53,7 +59,13 @@ public class PublicationServiceDB implements PublicationService {
 	@Override
 	public PublicationDTO addPublication(PublicationDTO publication) {
 		try {
-			return PublicationDTO.toDTO(publicationRepo.save(PublicationDTO.fromDTO(publication)));
+			if(subjectRepo.existsById(publication.getSubject().getId())) {
+				Publication publ = PublicationDTO.fromDTO(publication);
+				System.out.println(publ.getSubject());
+				return PublicationDTO.toDTO(publicationRepo.save(publ));
+			} else {
+				throw new ServerException("Subject with id " + publication.getSubject().getId() + " does not exist");
+			}
 		} catch (Exception e) {
 			throw new ServerException(e.getMessage());
 		}
@@ -72,6 +84,16 @@ public class PublicationServiceDB implements PublicationService {
 		} catch (Exception e) {
 			throw new ServerException(e.getMessage());
 		}
+	}
+	
+	@Override
+	public void deletePublication(long id) {
+		try {
+			publicationRepo.deleteById(id);
+		} catch(Exception e) {
+			throw new ServerException(e.getMessage());
+		}
+
 	}
 
 }

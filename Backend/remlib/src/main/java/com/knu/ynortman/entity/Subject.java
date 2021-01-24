@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 public class Subject {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	//@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private int id;
 	private String name;
 }

@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
@@ -24,9 +25,11 @@ public class Publication {
 	private String edition;
 	private String creator;
 	private String publisher;
-	@ManyToOne(cascade = CascadeType.MERGE)
+	@ManyToOne(/*cascade = CascadeType.MERGE*/)
 	private Subject subject;
 	private String descrText;
+	@Lob
+	@org.hibernate.annotations.Type(type="org.hibernate.type.BinaryType")
 	private byte[] descrPhoto;
 	private String source;
 	private Date publicationDate;
@@ -34,6 +37,6 @@ public class Publication {
 	private String rights;
 	private String format;
 	private String language;
-	@ManyToOne(cascade = CascadeType.MERGE)
+	@ManyToOne(/*cascade = CascadeType.MERGE*/)
 	private Type type;
 }

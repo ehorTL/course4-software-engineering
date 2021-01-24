@@ -7,6 +7,7 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
       http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
 
+	<property name="blob_type" value="bytea" dbms="postgresql" />
 
 	<changeSet id="1" author="postgres">
 		<createTable tableName="subject">
@@ -60,7 +61,7 @@
 			<column name="publisher" type="varchar" />
 			<column name="subject_id" type="int" />
 			<column name="descr_text" type="clob" />
-			<column name="descr_photo" type="blob" />
+			<column name="descr_photo" type="${blob_type}" />
 			<column name="source" type="varchar" />
 			<column name="publication_date" type="date" />
 			<column name="contributor" type="varchar" />
@@ -291,6 +292,17 @@
 					primaryKey="id">
 			<column header="id" name="id"/>
 			<column header="name" name="name"/>
+		</loadUpdateData>
+	</changeSet>
+	
+	<changeSet id="16" author="postgres" runOnChange="true">
+		<loadUpdateData tableName="type"
+					file="classpath:/db/data/type.csv"
+					separator=";"
+					encoding="windows-1251"
+					primaryKey="id">
+			<column header="id" name="id"/>
+			<column header="type" name="type"/>
 		</loadUpdateData>
 	</changeSet>
 	

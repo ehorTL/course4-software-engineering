@@ -7,4 +7,5 @@ public interface PublicationService {
 	PublicationDTO getPublication(int id);
 	PublicationDTO addPublication(PublicationDTO publication);
 	PublicationDTO updatePublication(PublicationDTO publication, int id);
+	void deletePublication(long id);
 }
