@@ -11,7 +11,6 @@ import lombok.Data;
 @Entity
 public class Role {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private int id;
 	private String role;
 }
