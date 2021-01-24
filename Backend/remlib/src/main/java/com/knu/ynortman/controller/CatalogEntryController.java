@@ -15,30 +15,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knu.ynortman.dto.PublicationDTO;
+import com.knu.ynortman.dto.PostCatalogEntryDTO;
 import com.knu.ynortman.exception.ApiError;
 import com.knu.ynortman.exception.ServerException;
-import com.knu.ynortman.service.PublicationService;
+import com.knu.ynortman.service.CatalogEntryService;
 
 @RestController
-@RequestMapping(path = "/books", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/ctlgentry", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin(origins = "*")
-public class BookController {
+public class CatalogEntryController {
+	private final CatalogEntryService ctService;
 
-	private final PublicationService publicationService;
-
-	public BookController(PublicationService publicationService) {
-		this.publicationService = publicationService;
+	public CatalogEntryController(CatalogEntryService ctService) {
+		this.ctService = ctService;
 	}
 
 	@GetMapping
-	public ResponseEntity<?> bookList() {
+	public ResponseEntity<?> ctList() {
 		try {
-			List<PublicationDTO> publications = (List<PublicationDTO>) publicationService.getAllPublications();
+			List<PostCatalogEntryDTO> publications = (List<PostCatalogEntryDTO>) ctService.getAllCatalogEntrys();
 			if (publications != null && publications.size() != 0) {
-				return new ResponseEntity<Iterable<PublicationDTO>>(publications, HttpStatus.OK);
+				return new ResponseEntity<Iterable<PostCatalogEntryDTO>>(publications, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.NOT_FOUND, "There were no book found"),
+				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.NOT_FOUND, "There were no catalog entry found"),
 						HttpStatus.NOT_FOUND);
 			}
 		} catch (ServerException e) {
@@ -48,11 +47,11 @@ public class BookController {
 	}
 	
 	@GetMapping(path = "/{id}")
-	public ResponseEntity<?> bookById(@PathVariable("id") Integer id) {
+	public ResponseEntity<?> ctById(@PathVariable("id") Integer id) {
 		try {
-			PublicationDTO publication =  publicationService.getPublication(id);
+			PostCatalogEntryDTO publication =  ctService.getCatalogEntry(id);
 			if (publication != null) {
-				return new ResponseEntity<PublicationDTO>(publication, HttpStatus.OK);
+				return new ResponseEntity<PostCatalogEntryDTO>(publication, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.NOT_FOUND, "There were no book found"),
 						HttpStatus.NOT_FOUND);
@@ -64,9 +63,9 @@ public class BookController {
 	}
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> postBook(@RequestBody PublicationDTO publication) {
+	public ResponseEntity<?> postCt(@RequestBody PostCatalogEntryDTO ct) {
 		try {
-			return new ResponseEntity<PublicationDTO>(publicationService.addPublication(publication), HttpStatus.CREATED);
+			return new ResponseEntity<PostCatalogEntryDTO>(ctService.addCatalogEntry(ct), HttpStatus.CREATED);
 		} catch (ServerException e) {
 			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -74,9 +73,9 @@ public class BookController {
 	}
 	
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> putAlgorithm(@RequestBody PublicationDTO publication, @PathVariable int id) {
+	public ResponseEntity<?> putCt(@RequestBody PostCatalogEntryDTO ct, @PathVariable int id) {
 		try {
-			return new ResponseEntity<PublicationDTO>(publicationService.updatePublication(publication, id), HttpStatus.OK);
+			return new ResponseEntity<PostCatalogEntryDTO>(ctService.updateCatalogEntry(ct, id), HttpStatus.OK);
 		} catch (ServerException e) {
 			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -84,17 +83,13 @@ public class BookController {
 	}
 	
 	@DeleteMapping(path = "/{id}")
-	public ResponseEntity<?> deleteAlgo(@PathVariable("id") Integer id) {
+	public ResponseEntity<?> deleteCt(@PathVariable("id") Integer id) {
 		try {
-			publicationService.deletePublication(id);
-			return new ResponseEntity<PublicationDTO>(HttpStatus.OK);
+			ctService.deleteCatalogEntry(id);
+			return new ResponseEntity<PostCatalogEntryDTO>(HttpStatus.OK);
 		} catch (ServerException e) {
 			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	/*public ResponseEntity<?> requestBook(@PathVariable("bid") Integer bid, @PathVariable("uid") String uid) {
-		
-	}*/
 }

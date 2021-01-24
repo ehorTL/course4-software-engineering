@@ -352,5 +352,18 @@
 	<changeSet id="18" author="postgres">
 		<renameTable newTableName="users" oldTableName="user"/>
 	</changeSet>
+	
+	<changeSet id="19" author="postgres">
+		<insert tableName="library">
+			<column name="id" value="0" />
+			<column name="name" value="CSC Library" />
+			<column name="address" value="Glushkova street 4G" />
+		</insert>
+		<insert tableName="library">
+			<column name="id" value="1" />
+			<column name="name" value="Math Library" />
+			<column name="address" value="Glushkova street 4D" />
+		</insert>
+	</changeSet>
 
 </databaseChangeLog>

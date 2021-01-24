@@ -12,8 +12,8 @@ import lombok.Data;
 @Entity
 public class Library {
 	@Id
-	@GeneratedValue(generator = "library_id_seq", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = "library_id_seq", sequenceName = "library_id_seq", allocationSize = 2)
+	/*@GeneratedValue(generator = "library_id_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "library_id_seq", sequenceName = "library_id_seq", allocationSize = 2)*/
 	private int id;
 	private String name;
 	private String address;

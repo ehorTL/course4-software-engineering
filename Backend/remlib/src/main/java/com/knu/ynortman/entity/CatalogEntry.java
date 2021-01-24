@@ -20,11 +20,11 @@ public class CatalogEntry {
 	@SequenceGenerator(name = "catalog_entry_id_seq", sequenceName = "catalog_entry_id_seq", allocationSize = 2)
 	private long id;
 	private String itemNumber;
-	@ManyToOne(cascade = CascadeType.MERGE)
+	@ManyToOne
 	private Publication publication;
-	@ManyToOne(cascade = CascadeType.MERGE)
+	@ManyToOne
 	private Library library;
-	@ManyToOne(cascade = CascadeType.MERGE)
+	@ManyToOne
 	private Status status;
 	private Date avlblFrom;
 	private int copiesNumber;
