@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knu.ynortman.dto.GetCatalogEntryDTO;
 import com.knu.ynortman.dto.PostCatalogEntryDTO;
 import com.knu.ynortman.exception.ApiError;
 import com.knu.ynortman.exception.ServerException;
@@ -33,9 +34,9 @@ public class CatalogEntryController {
 	@GetMapping
 	public ResponseEntity<?> ctList() {
 		try {
-			List<PostCatalogEntryDTO> publications = (List<PostCatalogEntryDTO>) ctService.getAllCatalogEntrys();
+			List<GetCatalogEntryDTO> publications = (List<GetCatalogEntryDTO>) ctService.getAllCatalogEntrys();
 			if (publications != null && publications.size() != 0) {
-				return new ResponseEntity<Iterable<PostCatalogEntryDTO>>(publications, HttpStatus.OK);
+				return new ResponseEntity<Iterable<GetCatalogEntryDTO>>(publications, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.NOT_FOUND, "There were no catalog entry found"),
 						HttpStatus.NOT_FOUND);
@@ -49,9 +50,9 @@ public class CatalogEntryController {
 	@GetMapping(path = "/{id}")
 	public ResponseEntity<?> ctById(@PathVariable("id") Integer id) {
 		try {
-			PostCatalogEntryDTO publication =  ctService.getCatalogEntry(id);
-			if (publication != null) {
-				return new ResponseEntity<PostCatalogEntryDTO>(publication, HttpStatus.OK);
+			GetCatalogEntryDTO ct =  ctService.getCatalogEntry(id);
+			if (ct != null) {
+				return new ResponseEntity<GetCatalogEntryDTO>(ct, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.NOT_FOUND, "There were no book found"),
 						HttpStatus.NOT_FOUND);
@@ -65,7 +66,7 @@ public class CatalogEntryController {
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> postCt(@RequestBody PostCatalogEntryDTO ct) {
 		try {
-			return new ResponseEntity<PostCatalogEntryDTO>(ctService.addCatalogEntry(ct), HttpStatus.CREATED);
+			return new ResponseEntity<GetCatalogEntryDTO>(ctService.addCatalogEntry(ct), HttpStatus.CREATED);
 		} catch (ServerException e) {
 			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,9 +74,9 @@ public class CatalogEntryController {
 	}
 	
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> putCt(@RequestBody PostCatalogEntryDTO ct, @PathVariable int id) {
+	public ResponseEntity<?> putCt(@RequestBody PostCatalogEntryDTO ctentry, @PathVariable int id) {
 		try {
-			return new ResponseEntity<PostCatalogEntryDTO>(ctService.updateCatalogEntry(ct, id), HttpStatus.OK);
+			return new ResponseEntity<GetCatalogEntryDTO>(ctService.updateCatalogEntryController(ctentry, id), HttpStatus.OK);
 		} catch (ServerException e) {
 			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

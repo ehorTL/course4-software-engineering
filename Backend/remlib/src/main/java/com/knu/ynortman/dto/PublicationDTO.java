@@ -2,6 +2,7 @@ package com.knu.ynortman.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.knu.ynortman.entity.Publication;
 import com.knu.ynortman.entity.Subject;
 import com.knu.ynortman.entity.Type;
@@ -20,6 +21,7 @@ public class PublicationDTO {
 	private String descrText;
 	private byte[] descrPhoto;
 	private String source;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date publicationDate;
 	private String contributor;
 	private String rights;

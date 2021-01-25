@@ -4,6 +4,7 @@ package com.knu.ynortman.dto;
 import com.knu.ynortman.entity.CatalogEntry;
 import com.knu.ynortman.entity.Library;
 import com.knu.ynortman.entity.Publication;
+import com.knu.ynortman.entity.Status;
 
 import lombok.Data;
 
@@ -13,6 +14,7 @@ public class PostCatalogEntryDTO {
 	private String itemNumber;
 	private Publication publication;
 	private Library library;
+	private Status status;
 	private int copiesNumber;
 	private int loanDays;
 	
@@ -24,6 +26,7 @@ public class PostCatalogEntryDTO {
 		ctDTO.setLibrary(ct.getLibrary());
 		ctDTO.setCopiesNumber(ct.getCopiesNumber());
 		ctDTO.setLoanDays(ct.getLoanDays());
+		ctDTO.setStatus(ct.getStatus());
 		return ctDTO;
 	}
 	
@@ -35,6 +38,7 @@ public class PostCatalogEntryDTO {
 		ct.setLibrary(ctDTO.getLibrary());
 		ct.setCopiesNumber(ctDTO.getCopiesNumber());
 		ct.setLoanDays(ctDTO.getLoanDays());
+		ct.setStatus(ctDTO.getStatus());
 		return ct;
 	}
 }

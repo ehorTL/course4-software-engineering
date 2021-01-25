@@ -3,6 +3,7 @@ package com.knu.ynortman.entity;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,6 +26,7 @@ public class LoanCard {
 	private CatalogEntry catalogEntry;
 	@ManyToOne(cascade = CascadeType.MERGE)
 	private LoanStatus loanStatus;
+	@Column(name = "checked_out_date")
 	private Date checkedOut;
 	private Date loanUntil;
 	private Date avlblFrom;

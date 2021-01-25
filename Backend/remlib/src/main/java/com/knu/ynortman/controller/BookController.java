@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knu.ynortman.dto.PublicationDTO;
 import com.knu.ynortman.exception.ApiError;
 import com.knu.ynortman.exception.ServerException;
+import com.knu.ynortman.service.CatalogEntryService;
 import com.knu.ynortman.service.PublicationService;
 
 @RestController
@@ -26,9 +27,11 @@ import com.knu.ynortman.service.PublicationService;
 public class BookController {
 
 	private final PublicationService publicationService;
+	private final CatalogEntryService ctService;
 
-	public BookController(PublicationService publicationService) {
+	public BookController(PublicationService publicationService, CatalogEntryService ctService) {
 		this.publicationService = publicationService;
+		this.ctService = ctService;
 	}
 
 	@GetMapping
@@ -74,7 +77,7 @@ public class BookController {
 	}
 	
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> putAlgorithm(@RequestBody PublicationDTO publication, @PathVariable int id) {
+	public ResponseEntity<?> putPublication(@RequestBody PublicationDTO publication, @PathVariable int id) {
 		try {
 			return new ResponseEntity<PublicationDTO>(publicationService.updatePublication(publication, id), HttpStatus.OK);
 		} catch (ServerException e) {
@@ -84,7 +87,7 @@ public class BookController {
 	}
 	
 	@DeleteMapping(path = "/{id}")
-	public ResponseEntity<?> deleteAlgo(@PathVariable("id") Integer id) {
+	public ResponseEntity<?> deleteBook(@PathVariable("id") Integer id) {
 		try {
 			publicationService.deletePublication(id);
 			return new ResponseEntity<PublicationDTO>(HttpStatus.OK);
@@ -94,7 +97,18 @@ public class BookController {
 		}
 	}
 	
-	/*public ResponseEntity<?> requestBook(@PathVariable("bid") Integer bid, @PathVariable("uid") String uid) {
-		
-	}*/
+	@PostMapping(path="/{bid}/request/{uid}")
+	public ResponseEntity<?> requestBook(@PathVariable("bid") Integer bid, @PathVariable("uid") String uid) {
+		try {
+			if(ctService.requestBook(bid, uid)) {
+				return new ResponseEntity<PublicationDTO>(HttpStatus.OK);
+			} else {
+				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Somethng was wrong"),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

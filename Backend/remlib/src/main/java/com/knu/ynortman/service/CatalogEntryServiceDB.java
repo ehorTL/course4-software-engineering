@@ -1,5 +1,7 @@
 package com.knu.ynortman.service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,9 +13,16 @@ import org.springframework.stereotype.Service;
 import com.knu.ynortman.dto.GetCatalogEntryDTO;
 import com.knu.ynortman.dto.PostCatalogEntryDTO;
 import com.knu.ynortman.entity.CatalogEntry;
+import com.knu.ynortman.entity.LoanCard;
 import com.knu.ynortman.exception.ServerException;
 import com.knu.ynortman.repository.CatalogEntryRepository;
+import com.knu.ynortman.repository.LoanCardRepository;
+import com.knu.ynortman.repository.LoanStatusRepository;
 import com.knu.ynortman.repository.StatusRepository;
+import com.knu.ynortman.repository.UserRepository;
+import com.knu.ynortman.util.DateUtil;
+
+import static com.knu.ynortman.util.DateUtil.*;
 
 
 @Service
@@ -21,10 +30,17 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 
 	private final CatalogEntryRepository ctRepo;
 	private final StatusRepository statusRepo;
+	private final LoanCardRepository loanRepo;
+	private final UserRepository userRepo;
+	private final LoanStatusRepository loanStatusRepo;
 	
-	public CatalogEntryServiceDB(CatalogEntryRepository ctRepo, StatusRepository statusRepo) {
+	public CatalogEntryServiceDB(CatalogEntryRepository ctRepo, StatusRepository statusRepo, LoanCardRepository loanRepo, 
+			UserRepository userRepo, LoanStatusRepository loanStatusRepo) {
 		this.ctRepo = ctRepo;
 		this.statusRepo = statusRepo;
+		this.loanRepo = loanRepo;
+		this.userRepo = userRepo;
+		this.loanStatusRepo = loanStatusRepo;
 	}
 	
 	@Override
@@ -64,7 +80,6 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			CatalogEntry ctlgentry = PostCatalogEntryDTO.fromDTO(ct);
 			ctlgentry.setAvlblFrom(new Date());
 			ctlgentry.setCopiesAvlbl(ct.getCopiesNumber());
-			ctlgentry.setStatus(statusRepo.findById(0).get());
 			return GetCatalogEntryDTO.toDTO(ctRepo.save(ctlgentry));
 		} catch (Exception e) {
 			throw new ServerException(e.getMessage());
@@ -83,7 +98,11 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 				CatalogEntry newCatalog = PostCatalogEntryDTO.fromDTO(ct);
 				oldCatalog.setLibrary(newCatalog.getLibrary());
 				oldCatalog.setCopiesNumber(newCatalog.getCopiesNumber());
+				if(oldCatalog.getCopiesAvlbl() > oldCatalog.getCopiesNumber()) {
+					oldCatalog.setCopiesAvlbl(oldCatalog.getCopiesNumber());
+				}
 				oldCatalog.setLoanDays(newCatalog.getLoanDays());
+				oldCatalog.setStatus(newCatalog.getStatus());
 			}
 			return GetCatalogEntryDTO.toDTO(ctRepo.save(oldCatalog));
 		} catch (Exception e) {
@@ -114,6 +133,53 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			throw new ServerException(e.getMessage());
 		}
 
+	}
+	
+	@Override
+	public boolean requestBook(long catalogId, String uid) throws Exception {
+		CatalogEntry ct = ctRepo.findById(catalogId).get();
+		if(ct.getStatus().getId() == 2) {
+			System.out.println("Non circulating");
+			throw new Exception("This publication is non-circulating");
+		} else if(ct.getStatus().getId() == 0) { //book is available
+			ct.setCopiesAvlbl(ct.getCopiesAvlbl()-1);
+			if(ct.getCopiesAvlbl() == 0) {
+				ct.setStatus(statusRepo.findById(3).get());
+				List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntry(ct);
+				Collections.sort(loancards, new Comparator<LoanCard>() {
+					public int compare(LoanCard l1, LoanCard l2) {
+						return l2.getLoanUntil().compareTo(l1.getLoanUntil());
+					}
+				});
+				System.out.println(loancards.get(0).getLoanUntil());
+				ct.setAvlblFrom(loancards.get(0).getLoanUntil());
+				ctRepo.save(ct);
+			}
+			LoanCard card = new LoanCard();
+			card.setCatalogEntry(ct);
+			card.setUser(userRepo.findById(uid).get());
+			card.setAvlblFrom(new Date());
+			card.setLoanUntil(DateUtil.addDays(new Date(), ct.getLoanDays()));
+			card.setLoanStatus(loanStatusRepo.findById(0).get());
+			loanRepo.save(card);
+			 
+		} else { // all books are requested
+			List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntry(ct);
+			Collections.sort(loancards, new Comparator<LoanCard>() {
+				public int compare(LoanCard l1, LoanCard l2) {
+					return l2.getLoanUntil().compareTo(l1.getLoanUntil());
+				}
+			});
+			System.out.println(loancards.get(0).getLoanUntil());
+			LoanCard card = new LoanCard();
+			card.setCatalogEntry(ct);
+			card.setUser(userRepo.findById(uid).get());
+			card.setAvlblFrom(new Date());
+			card.setLoanUntil(DateUtil.addDays(new Date(), ct.getLoanDays()));
+			card.setLoanStatus(loanStatusRepo.findById(0).get());
+			loanRepo.save(card);
+		}
+		return true;
 	}
 
 }
