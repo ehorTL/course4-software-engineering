@@ -14,6 +14,7 @@ import com.knu.ynortman.dto.GetCatalogEntryDTO;
 import com.knu.ynortman.dto.PostCatalogEntryDTO;
 import com.knu.ynortman.entity.CatalogEntry;
 import com.knu.ynortman.entity.LoanCard;
+import com.knu.ynortman.entity.User;
 import com.knu.ynortman.exception.ServerException;
 import com.knu.ynortman.repository.CatalogEntryRepository;
 import com.knu.ynortman.repository.LoanCardRepository;
@@ -138,6 +139,11 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 	@Override
 	public boolean requestBook(long catalogId, String uid) throws Exception {
 		CatalogEntry ct = ctRepo.findById(catalogId).get();
+		User user = userRepo.findById(uid).get();
+		if(loanRepo.findByCatalogEntryAndUser(ct, user).isPresent()) {
+			System.out.println("User has already requested this book");
+			return false;
+		}
 		if(ct.getStatus().getId() == 2) {
 			System.out.println("Non circulating");
 			throw new Exception("This publication is non-circulating");
@@ -157,9 +163,9 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			}
 			LoanCard card = new LoanCard();
 			card.setCatalogEntry(ct);
-			card.setUser(userRepo.findById(uid).get());
+			card.setUser(user);
 			card.setAvlblFrom(new Date());
-			card.setLoanUntil(DateUtil.addDays(new Date(), ct.getLoanDays()));
+			card.setLoanUntil(DateUtil.addDays(card.getAvlblFrom(), ct.getLoanDays()));
 			card.setLoanStatus(loanStatusRepo.findById(0).get());
 			loanRepo.save(card);
 			 
@@ -167,18 +173,44 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntry(ct);
 			Collections.sort(loancards, new Comparator<LoanCard>() {
 				public int compare(LoanCard l1, LoanCard l2) {
-					return l2.getLoanUntil().compareTo(l1.getLoanUntil());
+					return l1.getLoanUntil().compareTo(l2.getLoanUntil());
 				}
 			});
-			System.out.println(loancards.get(0).getLoanUntil());
+			int bookNumber = ct.getCopiesNumber();
+			int loanCardsNumber = loancards.size();
+			ct.setAvlblFrom(loancards.get(loanCardsNumber-bookNumber+1).getLoanUntil());
+			ctRepo.save(ct);
 			LoanCard card = new LoanCard();
 			card.setCatalogEntry(ct);
-			card.setUser(userRepo.findById(uid).get());
-			card.setAvlblFrom(new Date());
-			card.setLoanUntil(DateUtil.addDays(new Date(), ct.getLoanDays()));
+			card.setUser(user);
+			card.setAvlblFrom(loancards.get(loanCardsNumber-bookNumber).getLoanUntil());
+			card.setLoanUntil(DateUtil.addDays(card.getAvlblFrom(), ct.getLoanDays()));
 			card.setLoanStatus(loanStatusRepo.findById(0).get());
 			loanRepo.save(card);
 		}
+		return true;
+	}
+	
+	@Override
+	public boolean checkOutBook(long catalogId, String uid) {
+		CatalogEntry ct = ctRepo.findById(catalogId).get();
+		User user = userRepo.findById(uid).get();
+		LoanCard loanCard = loanRepo.findByCatalogEntryAndUser(ct, user).get();
+		if(loanCard.getLoanUntil().compareTo(new Date()) < 0) {
+			System.out.println("Too late to check out this book");
+			return false;
+		}
+		if(loanCard.getAvlblFrom().compareTo(new Date()) > 0) {
+			System.out.println("Too early to check out this book");
+			return false;
+		}
+		if(loanCard.getLoanStatus().getId() != 0) {
+			System.out.println("Invalid loan status");
+			return false;
+		}
+		loanCard.setCheckedOut(new Date());
+		loanCard.setLoanStatus(loanStatusRepo.findById(1).get());
+		loanRepo.save(loanCard);
 		return true;
 	}
 

@@ -111,4 +111,19 @@ public class BookController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@PostMapping(path="/{bid}/checkout/{uid}")
+	public ResponseEntity<?> checkOutBook(@PathVariable("bid") Integer bid, @PathVariable("uid") String uid) {
+		try {
+			if(ctService.checkOutBook(bid, uid)) {
+				return new ResponseEntity<PublicationDTO>(HttpStatus.OK);
+			} else {
+				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Somethng was wrong"),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

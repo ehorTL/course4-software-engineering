@@ -11,4 +11,5 @@ public interface CatalogEntryService {
 	GetCatalogEntryDTO updateCatalogEntry(GetCatalogEntryDTO ct, long id);
 	void deleteCatalogEntry(long id);
 	boolean requestBook(long catalogId, String uid) throws Exception;
+	boolean checkOutBook(long catalogId, String uid);
 }
