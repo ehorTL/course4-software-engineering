@@ -6,9 +6,10 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.knu.ynortman.entity.CatalogEntry;
 import com.knu.ynortman.entity.LoanCard;
+import com.knu.ynortman.entity.LoanStatus;
 import com.knu.ynortman.entity.User;
 
 public interface LoanCardRepository extends CrudRepository<LoanCard, Long> {
-	Iterable<LoanCard> findByCatalogEntry(CatalogEntry catalogEntry);
-	Optional<LoanCard> findByCatalogEntryAndUser(CatalogEntry catalogEntry, User user);
+	Iterable<LoanCard> findByCatalogEntryAndLoanStatus(CatalogEntry catalogEntry, LoanStatus loanStatus);
+	Optional<LoanCard> findByCatalogEntryAndUserAndLoanStatus(CatalogEntry catalogEntry, User user, LoanStatus loanStatus);
 }

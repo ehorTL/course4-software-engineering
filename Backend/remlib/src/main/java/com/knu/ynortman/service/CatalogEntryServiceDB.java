@@ -140,7 +140,7 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 	public boolean requestBook(long catalogId, String uid) throws Exception {
 		CatalogEntry ct = ctRepo.findById(catalogId).get();
 		User user = userRepo.findById(uid).get();
-		if(loanRepo.findByCatalogEntryAndUser(ct, user).isPresent()) {
+		if(loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(0).get()).isPresent()) {
 			System.out.println("User has already requested this book");
 			return false;
 		}
@@ -151,7 +151,8 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			ct.setCopiesAvlbl(ct.getCopiesAvlbl()-1);
 			if(ct.getCopiesAvlbl() == 0) {
 				ct.setStatus(statusRepo.findById(3).get());
-				List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntry(ct);
+				List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(1).get());
+				loancards.addAll((List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(0).get()));
 				Collections.sort(loancards, new Comparator<LoanCard>() {
 					public int compare(LoanCard l1, LoanCard l2) {
 						return l2.getLoanUntil().compareTo(l1.getLoanUntil());
@@ -167,10 +168,12 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			card.setAvlblFrom(new Date());
 			card.setLoanUntil(DateUtil.addDays(card.getAvlblFrom(), ct.getLoanDays()));
 			card.setLoanStatus(loanStatusRepo.findById(0).get());
+			card.setNotified(true);
 			loanRepo.save(card);
 			 
 		} else { // all books are requested
-			List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntry(ct);
+			List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(1).get());
+			loancards.addAll((List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(0).get()));
 			Collections.sort(loancards, new Comparator<LoanCard>() {
 				public int compare(LoanCard l1, LoanCard l2) {
 					return l1.getLoanUntil().compareTo(l2.getLoanUntil());
@@ -195,7 +198,7 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 	public boolean checkOutBook(long catalogId, String uid) {
 		CatalogEntry ct = ctRepo.findById(catalogId).get();
 		User user = userRepo.findById(uid).get();
-		LoanCard loanCard = loanRepo.findByCatalogEntryAndUser(ct, user).get();
+		LoanCard loanCard = loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(0).get()).get();
 		if(loanCard.getLoanUntil().compareTo(new Date()) < 0) {
 			System.out.println("Too late to check out this book");
 			return false;
@@ -211,6 +214,37 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 		loanCard.setCheckedOut(new Date());
 		loanCard.setLoanStatus(loanStatusRepo.findById(1).get());
 		loanRepo.save(loanCard);
+		return true;
+	}
+	
+	public boolean checkInBook(long catalogId, String uid) {
+		final int fee = 100;
+		CatalogEntry ct = ctRepo.findById(catalogId).get();
+		User user = userRepo.findById(uid).get();
+		LoanCard loanCard = loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(1).get()).get();
+		loanCard.setCheckedOut(new Date());
+		loanCard.setLoanStatus(loanStatusRepo.findById(2).get());
+		if(loanCard.getCheckedOut().compareTo(loanCard.getLoanUntil()) > 0) {
+			System.out.println("fee");
+			user.setFee(user.getFee() + fee);
+			userRepo.save(user);
+		}
+		
+		loanRepo.save(loanCard);
+		
+		List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(0).get());
+		Collections.sort(loancards, new Comparator<LoanCard>() {
+			public int compare(LoanCard l1, LoanCard l2) {
+				return l1.getLoanUntil().compareTo(l2.getLoanUntil());
+			}
+		});
+		if(loancards.size() == 0) {
+			ct.setStatus(statusRepo.findById(0).get());
+			ct.setCopiesAvlbl(ct.getCopiesAvlbl()+1);
+			ct.setAvlblFrom(new Date());
+		} else {
+			
+		}
 		return true;
 	}
 

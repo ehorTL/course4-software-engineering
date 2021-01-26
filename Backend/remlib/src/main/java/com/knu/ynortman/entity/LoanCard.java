@@ -31,4 +31,5 @@ public class LoanCard {
 	private Date loanUntil;
 	private Date avlblFrom;
 	private String notes;
+	private boolean notified;
 }

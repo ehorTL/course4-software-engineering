@@ -381,4 +381,10 @@
 		</insert>
 	</changeSet>
 	
+	<changeSet id="21" author="postgres">
+		<addColumn tableName="loan_card">
+			<column name="notified" type="bool" />
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
