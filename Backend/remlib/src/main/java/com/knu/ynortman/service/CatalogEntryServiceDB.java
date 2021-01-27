@@ -10,11 +10,16 @@ import java.util.function.Consumer;
 
 import org.springframework.stereotype.Service;
 
+import com.knu.ynortman.constants.LoanStatusConst;
 import com.knu.ynortman.dto.GetCatalogEntryDTO;
 import com.knu.ynortman.dto.PostCatalogEntryDTO;
 import com.knu.ynortman.entity.CatalogEntry;
 import com.knu.ynortman.entity.LoanCard;
+import com.knu.ynortman.entity.LoanStatus;
+import com.knu.ynortman.entity.Status;
 import com.knu.ynortman.entity.User;
+import com.knu.ynortman.enums.LoanStatusEnum;
+import com.knu.ynortman.enums.StatusEnum;
 import com.knu.ynortman.exception.ServerException;
 import com.knu.ynortman.repository.CatalogEntryRepository;
 import com.knu.ynortman.repository.LoanCardRepository;
@@ -36,6 +41,14 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 	private final UserRepository userRepo;
 	private final LoanStatusRepository loanStatusRepo;
 	private final EmailUtil email;
+	
+	public final int REQUESTED = 0;
+	public final int CHECKED_OUT = 1;
+	public final int CHECKED_IN = 2;
+	
+	public final int AVAILABLE = 0;
+	public final int NON_CIRCULATING = 2;
+	public final int QUEUE = 3;
 	
 	public CatalogEntryServiceDB(CatalogEntryRepository ctRepo, StatusRepository statusRepo, LoanCardRepository loanRepo, 
 			UserRepository userRepo, LoanStatusRepository loanStatusRepo, EmailUtil email) {
@@ -141,28 +154,25 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 	
 	@Override
 	public boolean requestBook(long catalogId, String uid) throws Exception {
-		CatalogEntry ct = ctRepo.findById(catalogId).get();
-		User user = userRepo.findById(uid).get();
-		if(loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(0).get()).isPresent() ||
-				loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(1).get()).isPresent()) {
-			System.out.println("User has already requested this book");
-			return false;
+		CatalogEntry ct = ctRepo.findById(catalogId).orElseThrow(() -> new Exception("Catalog entry with id " + catalogId + " does not exist"));
+		User user = userRepo.findById(uid).orElseThrow(() -> new Exception("User with id " + uid + " does not exist"));
+		if(loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(REQUESTED).get()).isPresent() ||
+				loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(CHECKED_OUT).get()).isPresent()) {
+			throw new Exception("User has already requested this book");
 		}
-		if(ct.getStatus().getId() == 2) {
-			System.out.println("Non circulating");
+		if(ct.getStatus().equals(statusRepo.findById(NON_CIRCULATING).get())) {
 			throw new Exception("This publication is non-circulating");
-		} else if(ct.getStatus().getId() == 0) { //book is available
+		} else if(ct.getStatus().equals(statusRepo.findById(AVAILABLE).get())) { //book is available
 			ct.setCopiesAvlbl(ct.getCopiesAvlbl()-1);
 			if(ct.getCopiesAvlbl() == 0) {
-				ct.setStatus(statusRepo.findById(3).get());
-				List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(1).get());
-				loancards.addAll((List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(0).get()));
+				ct.setStatus(statusRepo.findById(QUEUE).get());
+				List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(REQUESTED).get());
+				loancards.addAll((List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(CHECKED_OUT).get()));
 				Collections.sort(loancards, new Comparator<LoanCard>() {
 					public int compare(LoanCard l1, LoanCard l2) {
 						return l2.getLoanUntil().compareTo(l1.getLoanUntil());
 					}
 				});
-				System.out.println(loancards.get(0).getLoanUntil());
 				ct.setAvlblFrom(loancards.get(0).getLoanUntil());
 				ctRepo.save(ct);
 			}
@@ -171,15 +181,14 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			card.setUser(user);
 			card.setAvlblFrom(new Date());
 			card.setLoanUntil(DateUtil.addDays(card.getAvlblFrom(), ct.getLoanDays()));
-			card.setLoanStatus(loanStatusRepo.findById(0).get());
+			card.setLoanStatus(loanStatusRepo.findById(REQUESTED).get());
 			card.notification();
-			System.out.println(user.getEmail());
-			email.sendSimpleMessage(user.getEmail(), "Book notification", "Hello!");
+			email.sendSimpleMessage(user.getEmail(), "Book notification", messageText(card));
 			loanRepo.save(card);
 			 
 		} else { // all books are requested
-			List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(1).get());
-			loancards.addAll((List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(0).get()));
+			List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(CHECKED_OUT).get());
+			loancards.addAll((List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(REQUESTED).get()));
 			Collections.sort(loancards, new Comparator<LoanCard>() {
 				public int compare(LoanCard l1, LoanCard l2) {
 					return l1.getLoanUntil().compareTo(l2.getLoanUntil());
@@ -194,35 +203,38 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			card.setUser(user);
 			card.setAvlblFrom(loancards.get(loanCardsNumber-bookNumber).getLoanUntil());
 			card.setLoanUntil(DateUtil.addDays(card.getAvlblFrom(), ct.getLoanDays()));
-			card.setLoanStatus(loanStatusRepo.findById(0).get());
+			card.setLoanStatus(loanStatusRepo.findById(REQUESTED).get());
 			loanRepo.save(card);
 		}
 		return true;
 	}
 	
 	@Override
-	public boolean checkOutBook(long catalogId, String uid) {
-		CatalogEntry ct = ctRepo.findById(catalogId).get();
-		User user = userRepo.findById(uid).get();
-		LoanCard loanCard = loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(0).get()).get();
+	public boolean checkOutBook(long catalogId, String uid) throws Exception {
+		CatalogEntry ct = ctRepo.findById(catalogId).orElseThrow(() -> new Exception("Catalog entry with id " + catalogId + " does not exist"));
+		User user = userRepo.findById(uid).orElseThrow(() -> new Exception("User with id " + uid + " does not exist"));
+		System.out.println("Before requested");
+		LoanStatus ls = loanStatusRepo.findById(0).get();
+		//System.out.println(ls);
+		//System.out.println(LoanStatusEnum.REQUESTED.getStatus());
+		LoanCard loanCard = loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(REQUESTED).get()).
+					orElseThrow(() -> new Exception(
+							"User with id " + uid + " has not requested publication with id " + ct.getPublication().getIdentifier()));
+		System.out.println("After requested");
 		if(loanCard.getLoanUntil().compareTo(new Date()) < 0) {
-			System.out.println("Too late to check out this book");
-			return false;
+			throw new Exception("Too late to check out this book");
 		}
 		if(loanCard.getAvlblFrom().compareTo(new Date()) > 0) {
-			System.out.println("Too early to check out this book");
-			return false;
+			throw new Exception("Too early to check out this book");
 		}
-		if(loanCard.getLoanStatus().getId() != 0) {
-			System.out.println("Invalid loan status");
-			return false;
+		if(!loanCard.getLoanStatus().equals(loanStatusRepo.findById(REQUESTED).get())) {
+			throw new Exception("Invalid loan status! Must be requested!");
 		}
 		if(!loanCard.isNotified()) {
-			System.out.println("You have not been notified yet");
-			return false;
+			throw new Exception("You have not been notified yet");
 		}
 		loanCard.setCheckedOut(new Date());
-		loanCard.setLoanStatus(loanStatusRepo.findById(1).get());
+		loanCard.setLoanStatus(loanStatusRepo.findById(CHECKED_OUT).get());
 		loanRepo.save(loanCard);
 		return true;
 	}
@@ -232,9 +244,9 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 		final int fee = 100;
 		CatalogEntry ct = ctRepo.findById(catalogId).get();
 		User user = userRepo.findById(uid).get();
-		LoanCard loanCard = loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(1).get()).get();
+		LoanCard loanCard = loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(CHECKED_OUT).get()).get();
 		loanCard.setCheckedOut(new Date());
-		loanCard.setLoanStatus(loanStatusRepo.findById(2).get());
+		loanCard.setLoanStatus(loanStatusRepo.findById(CHECKED_IN).get());
 		if(loanCard.getCheckedOut().compareTo(loanCard.getLoanUntil()) > 0) {
 			System.out.println("fee");
 			user.setFee(user.getFee() + fee);
@@ -243,27 +255,36 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 		
 		loanRepo.save(loanCard);
 		
-		List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatusAndNotified(ct, loanStatusRepo.findById(0).get(), false);
+		List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatusAndNotified(
+				ct, loanStatusRepo.findById(REQUESTED).get(), false);
 		Collections.sort(loancards, new Comparator<LoanCard>() {
 			public int compare(LoanCard l1, LoanCard l2) {
 				return l1.getLoanUntil().compareTo(l2.getLoanUntil());
 			}
 		});
 		if(loancards.size() == 0) {
-			ct.setStatus(statusRepo.findById(0).get());
+			ct.setStatus(statusRepo.findById(AVAILABLE).get());
 			ct.setCopiesAvlbl(ct.getCopiesAvlbl()+1);
 			ct.setAvlblFrom(new Date());
 			ctRepo.save(ct);
 		} else {
 			LoanCard nextLoan = loancards.get(0);
 			nextLoan.notification();
-			System.out.println(user.getEmail());
-			email.sendSimpleMessage(user.getEmail(), "Book notification", "Hello!");
 			nextLoan.setAvlblFrom(new Date());
 			nextLoan.setLoanUntil(DateUtil.addDays(nextLoan.getAvlblFrom(), ct.getLoanDays()));
+			email.sendSimpleMessage(user.getEmail(), "Book notification", messageText(nextLoan));
 			loanRepo.save(nextLoan);
 		}
 		return true;
 	}
-
+	
+	
+	private String messageText(LoanCard loancard) {
+		return "Requested book " + loancard.getCatalogEntry().getPublication().getTitle() + " by " 
+				+ loancard.getCatalogEntry().getPublication().getCreator() + ", ISBN: "
+				+ loancard.getCatalogEntry().getPublication().getIdentifier() + " is now available. You can pick it up in the library "
+				+ loancard.getCatalogEntry().getLibrary().getName() + ", address: " + loancard.getCatalogEntry().getLibrary().getAddress()
+				+ ". The book is availiable until " + loancard.getLoanUntil() + ".";
+				
+	}
 }
