@@ -25,7 +25,7 @@ public class Publication {
 	private String edition;
 	private String creator;
 	private String publisher;
-	@ManyToOne(/*cascade = CascadeType.MERGE*/)
+	@ManyToOne
 	private Subject subject;
 	private String descrText;
 	@Lob
@@ -37,6 +37,6 @@ public class Publication {
 	private String rights;
 	private String format;
 	private String language;
-	@ManyToOne(/*cascade = CascadeType.MERGE*/)
+	@ManyToOne
 	private Type type;
 }

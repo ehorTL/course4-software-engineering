@@ -61,7 +61,6 @@ public class PublicationServiceDB implements PublicationService {
 		try {
 			if(subjectRepo.existsById(publication.getSubject().getId())) {
 				Publication publ = PublicationDTO.fromDTO(publication);
-				System.out.println(publ.getSubject());
 				return PublicationDTO.toDTO(publicationRepo.save(publ));
 			} else {
 				throw new ServerException("Subject with id " + publication.getSubject().getId() + " does not exist");

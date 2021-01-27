@@ -22,6 +22,7 @@ import com.knu.ynortman.repository.LoanStatusRepository;
 import com.knu.ynortman.repository.StatusRepository;
 import com.knu.ynortman.repository.UserRepository;
 import com.knu.ynortman.util.DateUtil;
+import com.knu.ynortman.util.EmailUtil;
 
 import static com.knu.ynortman.util.DateUtil.*;
 
@@ -34,14 +35,16 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 	private final LoanCardRepository loanRepo;
 	private final UserRepository userRepo;
 	private final LoanStatusRepository loanStatusRepo;
+	private final EmailUtil email;
 	
 	public CatalogEntryServiceDB(CatalogEntryRepository ctRepo, StatusRepository statusRepo, LoanCardRepository loanRepo, 
-			UserRepository userRepo, LoanStatusRepository loanStatusRepo) {
+			UserRepository userRepo, LoanStatusRepository loanStatusRepo, EmailUtil email) {
 		this.ctRepo = ctRepo;
 		this.statusRepo = statusRepo;
 		this.loanRepo = loanRepo;
 		this.userRepo = userRepo;
 		this.loanStatusRepo = loanStatusRepo;
+		this.email = email;
 	}
 	
 	@Override
@@ -170,6 +173,8 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			card.setLoanUntil(DateUtil.addDays(card.getAvlblFrom(), ct.getLoanDays()));
 			card.setLoanStatus(loanStatusRepo.findById(0).get());
 			card.notification();
+			System.out.println(user.getEmail());
+			email.sendSimpleMessage(user.getEmail(), "Book notification", "Hello!");
 			loanRepo.save(card);
 			 
 		} else { // all books are requested
@@ -252,6 +257,8 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 		} else {
 			LoanCard nextLoan = loancards.get(0);
 			nextLoan.notification();
+			System.out.println(user.getEmail());
+			email.sendSimpleMessage(user.getEmail(), "Book notification", "Hello!");
 			nextLoan.setAvlblFrom(new Date());
 			nextLoan.setLoanUntil(DateUtil.addDays(nextLoan.getAvlblFrom(), ct.getLoanDays()));
 			loanRepo.save(nextLoan);
