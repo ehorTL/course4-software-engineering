@@ -12,4 +12,5 @@ public interface CatalogEntryService {
 	void deleteCatalogEntry(long id);
 	boolean requestBook(long catalogId, String uid) throws Exception;
 	boolean checkOutBook(long catalogId, String uid);
+	boolean checkInBook(long catalogId, String uid);
 }

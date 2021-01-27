@@ -32,4 +32,8 @@ public class LoanCard {
 	private Date avlblFrom;
 	private String notes;
 	private boolean notified;
+	
+	public void notification() {
+		this.notified = true;
+	}
 }

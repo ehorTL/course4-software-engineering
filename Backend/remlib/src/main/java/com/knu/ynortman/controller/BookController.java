@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knu.ynortman.dto.GetCatalogEntryDTO;
 import com.knu.ynortman.dto.PublicationDTO;
 import com.knu.ynortman.exception.ApiError;
 import com.knu.ynortman.exception.ServerException;
@@ -103,7 +104,7 @@ public class BookController {
 			if(ctService.requestBook(bid, uid)) {
 				return new ResponseEntity<PublicationDTO>(HttpStatus.OK);
 			} else {
-				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Somethng was wrong"),
+				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Something was wrong"),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (Exception e) {
@@ -118,10 +119,57 @@ public class BookController {
 			if(ctService.checkOutBook(bid, uid)) {
 				return new ResponseEntity<PublicationDTO>(HttpStatus.OK);
 			} else {
-				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Somethng was wrong"),
+				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Something was wrong"),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (Exception e) {
+			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping(path="/{bid}/checkin/{uid}")
+	public ResponseEntity<?> checkInBook(@PathVariable("bid") Integer bid, @PathVariable("uid") String uid) {
+		try {
+			if(ctService.checkInBook(bid, uid)) {
+				return new ResponseEntity<PublicationDTO>(HttpStatus.OK);
+			} else {
+				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Something was wrong"),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping(path = "/catalog")
+	public ResponseEntity<?> ctList() {
+		try {
+			List<GetCatalogEntryDTO> publications = (List<GetCatalogEntryDTO>) ctService.getAllCatalogEntrys();
+			if (publications != null && publications.size() != 0) {
+				return new ResponseEntity<Iterable<GetCatalogEntryDTO>>(publications, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.NOT_FOUND, "There were no catalog entry found"),
+						HttpStatus.NOT_FOUND);
+			}
+		} catch (ServerException e) {
+			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping(path = "/catalog/{id}")
+	public ResponseEntity<?> ctById(@PathVariable("id") Integer id) {
+		try {
+			GetCatalogEntryDTO ct =  ctService.getCatalogEntry(id);
+			if (ct != null) {
+				return new ResponseEntity<GetCatalogEntryDTO>(ct, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<ApiError>(new ApiError(HttpStatus.NOT_FOUND, "There were no catalog found"),
+						HttpStatus.NOT_FOUND);
+			}
+		} catch (ServerException e) {
 			return new ResponseEntity<ApiError>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}

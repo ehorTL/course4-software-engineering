@@ -140,7 +140,8 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 	public boolean requestBook(long catalogId, String uid) throws Exception {
 		CatalogEntry ct = ctRepo.findById(catalogId).get();
 		User user = userRepo.findById(uid).get();
-		if(loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(0).get()).isPresent()) {
+		if(loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(0).get()).isPresent() ||
+				loanRepo.findByCatalogEntryAndUserAndLoanStatus(ct, user, loanStatusRepo.findById(1).get()).isPresent()) {
 			System.out.println("User has already requested this book");
 			return false;
 		}
@@ -168,7 +169,7 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			card.setAvlblFrom(new Date());
 			card.setLoanUntil(DateUtil.addDays(card.getAvlblFrom(), ct.getLoanDays()));
 			card.setLoanStatus(loanStatusRepo.findById(0).get());
-			card.setNotified(true);
+			card.notification();
 			loanRepo.save(card);
 			 
 		} else { // all books are requested
@@ -211,12 +212,17 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			System.out.println("Invalid loan status");
 			return false;
 		}
+		if(!loanCard.isNotified()) {
+			System.out.println("You have not been notified yet");
+			return false;
+		}
 		loanCard.setCheckedOut(new Date());
 		loanCard.setLoanStatus(loanStatusRepo.findById(1).get());
 		loanRepo.save(loanCard);
 		return true;
 	}
 	
+	@Override
 	public boolean checkInBook(long catalogId, String uid) {
 		final int fee = 100;
 		CatalogEntry ct = ctRepo.findById(catalogId).get();
@@ -232,7 +238,7 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 		
 		loanRepo.save(loanCard);
 		
-		List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatus(ct, loanStatusRepo.findById(0).get());
+		List<LoanCard> loancards = (List<LoanCard>) loanRepo.findByCatalogEntryAndLoanStatusAndNotified(ct, loanStatusRepo.findById(0).get(), false);
 		Collections.sort(loancards, new Comparator<LoanCard>() {
 			public int compare(LoanCard l1, LoanCard l2) {
 				return l1.getLoanUntil().compareTo(l2.getLoanUntil());
@@ -242,8 +248,13 @@ public class CatalogEntryServiceDB implements CatalogEntryService {
 			ct.setStatus(statusRepo.findById(0).get());
 			ct.setCopiesAvlbl(ct.getCopiesAvlbl()+1);
 			ct.setAvlblFrom(new Date());
+			ctRepo.save(ct);
 		} else {
-			
+			LoanCard nextLoan = loancards.get(0);
+			nextLoan.notification();
+			nextLoan.setAvlblFrom(new Date());
+			nextLoan.setLoanUntil(DateUtil.addDays(nextLoan.getAvlblFrom(), ct.getLoanDays()));
+			loanRepo.save(nextLoan);
 		}
 		return true;
 	}
