@@ -2,6 +2,9 @@ package com.knu.ynortman.dto;
 
 import java.util.Date;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import com.knu.ynortman.entity.CatalogEntry;
 import com.knu.ynortman.entity.Library;
 import com.knu.ynortman.entity.Publication;
@@ -12,12 +15,15 @@ import lombok.Data;
 @Data
 public class GetCatalogEntryDTO {
 	private long id;
+	@NotNull(message = "item number cannot be null")
 	private String itemNumber;
 	private Publication publication;
 	private Library library;
 	private Status status;
 	private Date avlblFrom;
+	@Min(0)
 	private int copiesNumber;
+	@Min(0)
 	private int copiesAvlbl;
 	private int loanDays;
 	

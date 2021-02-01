@@ -2,6 +2,8 @@ package com.knu.ynortman.dto;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.knu.ynortman.entity.Publication;
 import com.knu.ynortman.entity.Subject;
@@ -12,9 +14,12 @@ import lombok.Data;
 @Data
 public class PublicationDTO {
 	private long id;
+	@NotNull(message = "Title cannot be empty")
 	private String title;
+	@NotNull(message = "Identifier cannot be empty")
 	private String identifier;
 	private String edition;
+	@NotNull(message = "Creator cannot be empty")
 	private String creator;
 	private String publisher;
 	private Subject subject;
@@ -28,6 +33,11 @@ public class PublicationDTO {
 	private String format;
 	private String language;
 	private Type type;
+	
+	@JsonFormat(pattern="yyyy-MM-dd")
+	public Date getPublicationDate() {
+		return this.publicationDate;
+	}
 	
 	public static PublicationDTO toDTO(Publication publication) {
 		PublicationDTO publicationDTO = new PublicationDTO();

@@ -2,6 +2,8 @@ package com.knu.ynortman.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +67,7 @@ public class UserController {
 	}
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> postUser(@RequestBody PostUserDTO user) {
+	public ResponseEntity<?> postUser(@Valid @RequestBody PostUserDTO user) {
 		try {
 			return new ResponseEntity<GetUserDTO>(userService.addUser(user), HttpStatus.CREATED);
 		} catch (ServerException e) {
@@ -75,7 +77,7 @@ public class UserController {
 	}
 	
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> putUser(@RequestBody PostUserDTO user, @PathVariable String id) {
+	public ResponseEntity<?> putUser(@Valid @RequestBody PostUserDTO user, @PathVariable String id) {
 		try {
 			return new ResponseEntity<GetUserDTO>(userService.updateUser(user, id), HttpStatus.OK);
 		} catch (ServerException e) {

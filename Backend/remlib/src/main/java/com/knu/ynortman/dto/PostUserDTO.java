@@ -4,11 +4,13 @@ import java.util.Date;
 
 import com.knu.ynortman.entity.Role;
 import com.knu.ynortman.entity.User;
+import com.knu.ynortman.validation.EmailConstraint;
 
 import lombok.Data;
 
 @Data
 public class PostUserDTO {
+	@EmailConstraint
 	private String email;
 	private String surname;
 	private String name;

@@ -2,6 +2,8 @@ package com.knu.ynortman.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +70,7 @@ public class BookController {
 	}
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> postBook(@RequestBody PublicationDTO publication) {
+	public ResponseEntity<?> postBook(@Valid @RequestBody PublicationDTO publication) {
 		try {
 			return new ResponseEntity<PublicationDTO>(publicationService.addPublication(publication), HttpStatus.CREATED);
 		} catch (ServerException e) {
@@ -78,7 +80,7 @@ public class BookController {
 	}
 	
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> putPublication(@RequestBody PublicationDTO publication, @PathVariable int id) {
+	public ResponseEntity<?> putPublication(@Valid @RequestBody PublicationDTO publication, @PathVariable int id) {
 		try {
 			return new ResponseEntity<PublicationDTO>(publicationService.updatePublication(publication, id), HttpStatus.OK);
 		} catch (ServerException e) {

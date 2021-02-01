@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 
 import org.springframework.stereotype.Service;
 
-import com.knu.ynortman.constants.LoanStatusConst;
 import com.knu.ynortman.dto.GetCatalogEntryDTO;
 import com.knu.ynortman.dto.PostCatalogEntryDTO;
 import com.knu.ynortman.entity.CatalogEntry;
@@ -18,8 +17,6 @@ import com.knu.ynortman.entity.LoanCard;
 import com.knu.ynortman.entity.LoanStatus;
 import com.knu.ynortman.entity.Status;
 import com.knu.ynortman.entity.User;
-import com.knu.ynortman.enums.LoanStatusEnum;
-import com.knu.ynortman.enums.StatusEnum;
 import com.knu.ynortman.exception.ServerException;
 import com.knu.ynortman.repository.CatalogEntryRepository;
 import com.knu.ynortman.repository.LoanCardRepository;
